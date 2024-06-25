@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Kenepa\Banner\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class BannerCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'banner';
 
     public $description = 'My command';
 

@@ -1,20 +1,23 @@
 <?php
 
-namespace VendorName\Skeleton;
+namespace Kenepa\Banner;
 
+use Kenepa\Banner\Livewire\BannerManagerPage;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 
-class SkeletonPlugin implements Plugin
+class BannerPlugin implements Plugin
 {
     public function getId(): string
     {
-        return 'skeleton';
+        return 'banner';
     }
 
     public function register(Panel $panel): void
     {
-        //
+        $panel->pages([
+           BannerManagerPage::class
+        ]);
     }
 
     public function boot(Panel $panel): void
