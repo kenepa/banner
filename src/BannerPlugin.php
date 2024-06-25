@@ -2,9 +2,9 @@
 
 namespace Kenepa\Banner;
 
-use Kenepa\Banner\Livewire\BannerManagerPage;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Kenepa\Banner\Livewire\BannerManagerPage;
 
 class BannerPlugin implements Plugin
 {
@@ -16,7 +16,7 @@ class BannerPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->pages([
-           BannerManagerPage::class
+            BannerManagerPage::class,
         ]);
     }
 

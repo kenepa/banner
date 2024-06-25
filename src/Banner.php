@@ -50,7 +50,8 @@ class Banner
         Cache::put('kenepa::banners', $banners);
     }
 
-    public static function getIndex(string $bannerId): int | bool {
+    public static function getIndex(string $bannerId): int | bool
+    {
         $banners = static::getAll();
 
         return $banners->search(function (array $banner) use ($bannerId) {

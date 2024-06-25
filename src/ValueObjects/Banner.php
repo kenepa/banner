@@ -11,7 +11,7 @@ class Banner implements Wireable
         public string $name,
         public string $content,
         public string $is_active,
-        public string|null $active_since,
+        public ?string $active_since,
         public string $icon,
         public string $background_type,
         public string $start_color,
@@ -19,9 +19,7 @@ class Banner implements Wireable
         public string $start_time,
         public string $end_time,
         public bool $can_be_closed_by_user,
-    )
-    {
-    }
+    ) {}
 
     // Todo: add defaults to all
     public static function fromArray(array $data): Banner
@@ -42,7 +40,6 @@ class Banner implements Wireable
         );
     }
 
-
     public function toLivewire()
     {
         return [
@@ -57,7 +54,7 @@ class Banner implements Wireable
             'end_color' => $this->end_color,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
-            'can_be_closed_by_user' => $this->can_be_closed_by_user
+            'can_be_closed_by_user' => $this->can_be_closed_by_user,
         ];
     }
 

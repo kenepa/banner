@@ -2,7 +2,6 @@
 
 namespace Kenepa\Banner\Livewire;
 
-
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
@@ -17,8 +16,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Kenepa\Banner\Facades\Banner;
 use Kenepa\Banner\ValueObjects\Banner as BannerObject;
 
@@ -31,9 +28,10 @@ class BannerManagerPage extends Page
      */
     public $banners;
 
-    public BannerObject|null $selectedBanner = null;
+    public ?BannerObject $selectedBanner = null;
 
     protected static string $view = 'banner::pages.banner-manager';
+
     protected static ?string $navigationIcon = 'heroicon-o-megaphone';
 
     protected static ?string $slug = 'banner-manager';
@@ -48,9 +46,8 @@ class BannerManagerPage extends Page
 
         $this->form->fill();
 
-       $this->getBanners();
+        $this->getBanners();
     }
-
 
     public function createNewBannerAction()
     {
@@ -105,7 +102,6 @@ class BannerManagerPage extends Page
         // Todo reuse findBanner index here!
         $foundIndex = array_search($bannerId, array_column($this->banners, 'id'));
 
-
         if ($foundIndex === false) {
             Notification::make()
                 ->title('Failed to load banner.')
@@ -120,7 +116,8 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int | bool {
+    public function findBannerIndex(string $bannerId): int | bool
+    {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
         });
@@ -155,7 +152,7 @@ class BannerManagerPage extends Page
                                     'strike',
                                     'underline',
                                     'undo',
-                                    'codeBlock'
+                                    'codeBlock',
                                 ]),
                             Fieldset::make('Options')
                                 ->schema([
@@ -171,7 +168,7 @@ class BannerManagerPage extends Page
                             Select::make('background_type')
                                 ->options([
                                     'solid' => 'Solid',
-                                    'gradient' => 'Gradient'
+                                    'gradient' => 'Gradient',
                                 ])->default('solid'),
                             ColorPicker::make('start_color'),
                             ColorPicker::make('end_color'),
@@ -185,5 +182,4 @@ class BannerManagerPage extends Page
                 ])->contained(false),
         ];
     }
-
 }
