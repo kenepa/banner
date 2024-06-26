@@ -55,12 +55,12 @@ class Banner
         $banners = static::getAll();
         $bannerIndex = static::getIndex($bannerId);
 
-        array_splice($banners, $bannerIndex,1);
+        array_splice($banners, $bannerIndex, 1);
 
         Cache::put('kenepa::banners', $banners);
     }
 
-    public static function getIndex(string $bannerId): int|bool
+    public static function getIndex(string $bannerId): int | bool
     {
         $banners = static::getAll();
 
