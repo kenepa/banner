@@ -1,11 +1,21 @@
 <div>
     @foreach($banners as $banner)
         @if($banner->is_active)
-            <div style="background-color: {{ $banner['start_color'] }}; color:white;" id="{{ $banner->id }}"
+            @php
+                $start_color = $banner->start_color;
+                $end_color = '';
+
+                if ($banner->background_type === 'gradient') {
+                    $end_color = $banner->end_color;
+                } else {
+                    $end_color = $banner->start_color;
+                }
+            @endphp
+            <div style="background-color: {{ $banner->start_color }}; background-image: linear-gradient(to right, {{ $start_color }}, {{ $end_color }}) ;color:white;" id="{{ $banner->id }}"
                  class="grid grid-cols-12 pl-6 py-2 pr-8">
                 <div class="col-span-11 flex items-center">
                     <div>
-                        @if($banner['icon'])
+                        @if($banner->icon)
                             <x-filament::icon
                                 alias="banner::close"
                                 :icon="$banner->icon"

@@ -17,8 +17,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Kenepa\Banner\Facades\Banner;
 use Kenepa\Banner\ValueObjects\Banner as BannerObject;
 
@@ -48,7 +46,7 @@ class BannerManagerPage extends Page
 
         $this->form->fill();
 
-       $this->getBanners();
+        $this->getBanners();
     }
 
 
@@ -56,8 +54,33 @@ class BannerManagerPage extends Page
     {
         return Action::make('createNewBanner')
             ->form($this->getSchema())
-            ->action(fn (array $data) => $this->createBanner($data))
+            ->icon('heroicon-m-plus')
+            ->action(fn(array $data) => $this->createBanner($data))
             ->slideOver();
+    }
+
+    public function deleteBannerAction()
+    {
+        return Action::make('deleteBanner')
+            ->action(function () {
+               Banner::delete($this->selectedBanner->id);
+
+               $tempBanner = $this->selectedBanner;
+
+               $this->selectedBanner = null;
+               $this->getBanners();
+
+                Notification::make()
+                    ->title('Successfully deleted banner')
+                    ->icon('heroicon-m-trash')
+                    ->danger()
+                    ->send();
+
+            })
+            ->color('danger')
+            ->icon('heroicon-m-trash')
+            ->iconButton()
+            ->requiresConfirmation();
     }
 
     public function form(Form $form): Form
@@ -103,7 +126,7 @@ class BannerManagerPage extends Page
     public function selectBanner(string $bannerId)
     {
         // Todo reuse findBanner index here!
-        $foundIndex = array_search($bannerId, array_column($this->banners, 'id'));
+        $foundIndex = Banner::getIndex($bannerId);
 
 
         if ($foundIndex === false) {
@@ -120,7 +143,8 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int | bool {
+    public function findBannerIndex(string $bannerId): int|bool
+    {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
         });
@@ -144,7 +168,7 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
-                            Hidden::make('id')->default(fn () => uniqid()),
+                            Hidden::make('id')->default(fn() => uniqid()),
                             TextInput::make('name')->required(),
                             RichEditor::make('content')
                                 ->required()
@@ -167,14 +191,23 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('Styling')
                         ->icon('heroicon-m-paint-brush')
                         ->schema([
-                            TextInput::make('icon')->placeholder('heroicon-m-wrench'),
+                            TextInput::make('icon')
+                                ->default('heroicon-m-megaphone')
+                                ->placeholder('heroicon-m-wrench'),
                             Select::make('background_type')
+                                ->reactive()
+                                ->selectablePlaceholder(false)
+                                ->default('solid')
                                 ->options([
                                     'solid' => 'Solid',
                                     'gradient' => 'Gradient'
                                 ])->default('solid'),
-                            ColorPicker::make('start_color'),
-                            ColorPicker::make('end_color'),
+                            ColorPicker::make('start_color')
+                                ->default('#D97706')
+                                ->required(),
+                            ColorPicker::make('end_color')
+                                ->default('#F59E0C')
+                                ->visible(fn ($get) => $get('background_type') === 'gradient'),
                         ]),
                     Tabs\Tab::make('Scheduling')
                         ->icon('heroicon-m-clock')

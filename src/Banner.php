@@ -35,26 +35,35 @@ class Banner
     public static function update(array $data): void
     {
         $banners = static::getAll();
-        $updatedBannerData = $data;
+        $updatedBannerData = ValueObjects\Banner::fromArray($data);
 
         // TODO fix active since overwrite
-        if ($data['is_active']) {
-            $updatedBannerData['active_since'] = now();
+        if ($updatedBannerData->is_active) {
+            $updatedBannerData->active_since = now();
         } else {
-            $updatedBannerData['active_since'] = null;
+            $updatedBannerData->active_since = null;
         }
 
-        $bannerIndex = static::getIndex($updatedBannerData['id']);
+        $bannerIndex = static::getIndex($updatedBannerData->id);
         $banners[$bannerIndex] = $updatedBannerData;
 
         Cache::put('kenepa::banners', $banners);
     }
 
-    public static function getIndex(string $bannerId): int | bool {
+    public static function delete(string $bannerId)
+    {
+        $banners = static::getAll();
+        $bannerIndex = static::getIndex($bannerId);
+
+        array_splice($banners, $bannerIndex,1);
+
+        Cache::put('kenepa::banners', $banners);
+    }
+
+    public static function getIndex(string $bannerId): int|bool
+    {
         $banners = static::getAll();
 
-        return $banners->search(function (array $banner) use ($bannerId) {
-            return $banner['id'] === $bannerId;
-        });
+        return array_search($bannerId, array_column($banners, 'id'));
     }
 }
