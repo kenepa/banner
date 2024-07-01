@@ -2,7 +2,6 @@
 
 namespace Kenepa\Banner\Livewire;
 
-
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
@@ -29,9 +28,10 @@ class BannerManagerPage extends Page
      */
     public $banners;
 
-    public BannerObject|null $selectedBanner = null;
+    public ?BannerObject $selectedBanner = null;
 
     protected static string $view = 'banner::pages.banner-manager';
+
     protected static ?string $navigationIcon = 'heroicon-o-megaphone';
 
     protected static ?string $slug = 'banner-manager';
@@ -49,13 +49,12 @@ class BannerManagerPage extends Page
         $this->getBanners();
     }
 
-
     public function createNewBannerAction()
     {
         return Action::make('createNewBanner')
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
-            ->action(fn(array $data) => $this->createBanner($data))
+            ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
 
@@ -63,12 +62,12 @@ class BannerManagerPage extends Page
     {
         return Action::make('deleteBanner')
             ->action(function () {
-               Banner::delete($this->selectedBanner->id);
+                Banner::delete($this->selectedBanner->id);
 
-               $tempBanner = $this->selectedBanner;
+                $tempBanner = $this->selectedBanner;
 
-               $this->selectedBanner = null;
-               $this->getBanners();
+                $this->selectedBanner = null;
+                $this->getBanners();
 
                 Notification::make()
                     ->title('Successfully deleted banner')
@@ -128,7 +127,6 @@ class BannerManagerPage extends Page
         // Todo reuse findBanner index here!
         $foundIndex = Banner::getIndex($bannerId);
 
-
         if ($foundIndex === false) {
             Notification::make()
                 ->title('Failed to load banner.')
@@ -143,7 +141,7 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int|bool
+    public function findBannerIndex(string $bannerId): int | bool
     {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
@@ -156,6 +154,7 @@ class BannerManagerPage extends Page
         if (is_null($this->selectedBanner)) {
             return false;
         }
+
         return $this->selectedBanner->id === $bannerId;
     }
 
@@ -167,7 +166,7 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
-                            Hidden::make('id')->default(fn() => uniqid()),
+                            Hidden::make('id')->default(fn () => uniqid()),
                             TextInput::make('name')->required(),
                             RichEditor::make('content')
                                 ->required()
@@ -178,7 +177,7 @@ class BannerManagerPage extends Page
                                     'strike',
                                     'underline',
                                     'undo',
-                                    'codeBlock'
+                                    'codeBlock',
                                 ]),
                             Fieldset::make('Options')
                                 ->schema([
@@ -199,7 +198,7 @@ class BannerManagerPage extends Page
                                 ->default('solid')
                                 ->options([
                                     'solid' => 'Solid',
-                                    'gradient' => 'Gradient'
+                                    'gradient' => 'Gradient',
                                 ])->default('solid'),
                             ColorPicker::make('start_color')
                                 ->default('#D97706')
@@ -221,11 +220,10 @@ class BannerManagerPage extends Page
     public static function getNavigationBadge(): ?string
     {
         $activeBannerCount = Banner::getActiveBannerCount();
-        if ( $activeBannerCount > 0) {
+        if ($activeBannerCount > 0) {
             return (string) $activeBannerCount;
         }
 
         return null;
     }
-
 }
