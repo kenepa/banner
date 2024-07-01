@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Cache;
 
 class Banner
 {
+    /**
+     * @return ValueObjects\Banner[]
+     */
     public static function getAll(): array
     {
         return Cache::get('kenepa::banners', []);
@@ -55,7 +58,7 @@ class Banner
         $banners = static::getAll();
         $bannerIndex = static::getIndex($bannerId);
 
-        array_splice($banners, $bannerIndex,1);
+        array_splice($banners, $bannerIndex, 1);
 
         Cache::put('kenepa::banners', $banners);
     }
@@ -65,5 +68,25 @@ class Banner
         $banners = static::getAll();
 
         return array_search($bannerId, array_column($banners, 'id'));
+    }
+
+    /**
+     * @return ValueObjects\Banner[]
+     */
+    public static function getActiveBanners(): array
+    {
+        $banners = static::getAll();
+
+        return array_filter($banners, function (ValueObjects\Banner $banner) {
+           return $banner->is_active;
+        });
+    }
+
+
+    public static function getActiveBannerCount(): int
+    {
+        $banners = static::getActiveBanners();
+
+        return count($banners);
     }
 }

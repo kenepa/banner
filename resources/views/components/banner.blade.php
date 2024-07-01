@@ -1,6 +1,6 @@
 <div>
     @foreach($banners as $banner)
-        @if($banner->is_active)
+        @if($banner->isVisible())
             @php
                 $start_color = $banner->start_color;
                 $end_color = '';

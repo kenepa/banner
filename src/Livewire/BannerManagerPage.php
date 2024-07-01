@@ -156,7 +156,6 @@ class BannerManagerPage extends Page
         if (is_null($this->selectedBanner)) {
             return false;
         }
-
         return $this->selectedBanner->id === $bannerId;
     }
 
@@ -217,6 +216,16 @@ class BannerManagerPage extends Page
                         ]),
                 ])->contained(false),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $activeBannerCount = Banner::getActiveBannerCount();
+        if ( $activeBannerCount > 0) {
+            return (string) $activeBannerCount;
+        }
+
+        return null;
     }
 
 }

@@ -31,7 +31,7 @@
                                 wire:click="selectBanner('{{ $banner->id }}')"
                                 @class([
                                     'rounded-lg hover:bg-gray-100 transition active:bg-gray-200 active:shadow-inner hover:transition-all dark:bg-gray-900 dark:ring-white/10 px-4 py-4 select-none cursor-pointer',
-                                    'bg-gray-100' => $this->isBannerActive($banner->is_active) ?? false
+                                    'bg-gray-100' => $this->isBannerActive($banner->id) ?? false
                                 ])
                             >
                                 <h1>{{ $banner->name }}</h1>

@@ -2,23 +2,24 @@
 
 namespace Kenepa\Banner\ValueObjects;
 
+use Illuminate\Support\Carbon;
 use Livewire\Wireable;
 
 class Banner implements Wireable
 {
     public function __construct(
-        public string $id,
-        public string $name,
-        public string $content,
-        public string $is_active,
+        public string      $id,
+        public string      $name,
+        public string      $content,
+        public string      $is_active,
         public string|null $active_since,
         public string|null $icon,
-        public string $background_type,
-        public string $start_color,
+        public string      $background_type,
+        public string      $start_color,
         public string|null $end_color,
         public string|null $start_time,
         public string|null $end_time,
-        public bool $can_be_closed_by_user,
+        public bool        $can_be_closed_by_user,
     )
     {
     }
@@ -77,5 +78,31 @@ class Banner implements Wireable
             $value['end_time'],
             $value['can_be_closed_by_user'],
         );
+    }
+
+    public function isVisible(): bool
+    {
+        if ($this->is_active && $this->canViewBasedOnSchedule()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function canViewBasedOnSchedule(): bool
+    {
+        $start_time = Carbon::parse($this->start_time);
+        $end_time = Carbon::parse($this->end_time);
+
+        if ($start_time < now() && now() < $end_time) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isScheduled(): bool
+    {
+
     }
 }
