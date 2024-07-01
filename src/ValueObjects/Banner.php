@@ -12,17 +12,15 @@ class Banner implements Wireable
         public string $name,
         public string $content,
         public string $is_active,
-        public string|null $active_since,
-        public string|null $icon,
+        public ?string $active_since,
+        public ?string $icon,
         public string $background_type,
         public string $start_color,
-        public string|null $end_color,
-        public string|null $start_time,
-        public string|null $end_time,
+        public ?string $end_color,
+        public ?string $start_time,
+        public ?string $end_time,
         public bool $can_be_closed_by_user,
-    )
-    {
-    }
+    ) {}
 
     // Todo: add defaults to all
     public static function fromArray(array $data): Banner
@@ -100,8 +98,5 @@ class Banner implements Wireable
         return false;
     }
 
-    public function isScheduled(): bool
-    {
-
-    }
+    public function isScheduled(): bool {}
 }

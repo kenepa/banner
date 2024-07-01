@@ -78,10 +78,9 @@ class Banner
         $banners = static::getAll();
 
         return array_filter($banners, function (ValueObjects\Banner $banner) {
-           return $banner->is_active;
+            return $banner->is_active;
         });
     }
-
 
     public static function getActiveBannerCount(): int
     {
