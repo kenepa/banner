@@ -2,91 +2,106 @@
 
 namespace Kenepa\Banner;
 
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Carbon;
+use Kenepa\Banner\ValueObjects\BannerData;
+use Livewire\Wireable;
 
-class Banner
+class Banner implements Wireable
 {
-    /**
-     * @return ValueObjects\Banner[]
-     */
-    public static function getAll(): array
-    {
-        return Cache::get('kenepa::banners', []);
+    public function __construct(
+        public string $id,
+        public string $name,
+        public string $content,
+        public string $is_active,
+        public ?string $active_since,
+        public ?string $icon,
+        public string $background_type,
+        public string $start_color,
+        public ?string $end_color,
+        public ?string $start_time,
+        public ?string $end_time,
+        public bool $can_be_closed_by_user,
+    ) {
     }
 
-    public static function store(ValueObjects\Banner $data): void
+    public static function fromData(BannerData $data): static
     {
-        $banners = static::getAll();
+        return new static(
+            $data->id,
+            $data->name,
+            $data->content,
+            $data->is_active,
+            $data->active_since,
+            $data->icon,
+            $data->background_type,
+            $data->start_color,
+            $data->end_color,
+            $data->start_time,
+            $data->end_time,
+            $data->can_be_closed_by_user
+        );
+    }
 
-        $banner = $data;
+    public function toLivewire(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'content' => $this->content,
+            'is_active' => $this->is_active,
+            'active_since' => $this->active_since,
+            'icon' => $this->icon,
+            'background_type' => $this->background_type,
+            'start_color' => $this->start_color,
+            'end_color' => $this->end_color,
+            'start_time' => $this->start_time,
+            'end_time' => $this->end_time,
+            'can_be_closed_by_user' => $this->can_be_closed_by_user,
 
-        if ($banner->is_active) {
-            $banner->active_since = now();
-        } else {
-            $banner->active_since = null;
+        ];
+    }
+
+    public static function fromLivewire($value)
+    {
+        return new static(
+            $value['id'],
+            $value['name'],
+            $value['content'],
+            $value['is_active'],
+            $value['active_since'],
+            $value['icon'],
+            $value['background_type'],
+            $value['start_color'],
+            $value['end_color'],
+            $value['start_time'],
+            $value['end_time'],
+            $value['can_be_closed_by_user'],
+        );
+    }
+
+    public function isVisible(): bool
+    {
+        if ($this->is_active && $this->canViewBasedOnSchedule()) {
+            return true;
         }
 
-        $banner->id = uniqid();
-
-        $banners[] = $banner;
-
-        Cache::put('kenepa::banners', $banners);
-
-        //todo: add try catch
+        return false;
     }
 
-    public static function update(array $data): void
+    public function canViewBasedOnSchedule(): bool
     {
-        $banners = static::getAll();
-        $updatedBannerData = ValueObjects\Banner::fromArray($data);
+        $start_time = Carbon::parse($this->start_time);
+        $end_time = Carbon::parse($this->end_time);
 
-        // TODO fix active since overwrite
-        if ($updatedBannerData->is_active) {
-            $updatedBannerData->active_since = now();
-        } else {
-            $updatedBannerData->active_since = null;
+        if ($start_time < now() && now() < $end_time) {
+            return true;
         }
 
-        $bannerIndex = static::getIndex($updatedBannerData->id);
-        $banners[$bannerIndex] = $updatedBannerData;
-
-        Cache::put('kenepa::banners', $banners);
+        return false;
     }
 
-    public static function delete(string $bannerId)
+    public function isScheduled(): bool
     {
-        $banners = static::getAll();
-        $bannerIndex = static::getIndex($bannerId);
 
-        array_splice($banners, $bannerIndex, 1);
-
-        Cache::put('kenepa::banners', $banners);
-    }
-
-    public static function getIndex(string $bannerId): int | bool
-    {
-        $banners = static::getAll();
-
-        return array_search($bannerId, array_column($banners, 'id'));
-    }
-
-    /**
-     * @return ValueObjects\Banner[]
-     */
-    public static function getActiveBanners(): array
-    {
-        $banners = static::getAll();
-
-        return array_filter($banners, function (ValueObjects\Banner $banner) {
-           return $banner->is_active;
-        });
-    }
-
-
-    public static function getActiveBannerCount(): int
-    {
-        $banners = static::getActiveBanners();
-
-        return count($banners);
     }
 }

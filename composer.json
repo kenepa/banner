@@ -67,7 +67,7 @@
                 "Kenepa\\Banner\\BannerServiceProvider"
             ],
             "aliases": {
-                "Banner": "Kenepa\\Banner\\Facades\\Banner"
+                "Banner": "BannerManager"
             }
         }
     },

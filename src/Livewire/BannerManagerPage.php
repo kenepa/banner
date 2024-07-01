@@ -2,7 +2,6 @@
 
 namespace Kenepa\Banner\Livewire;
 
-
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
@@ -17,21 +16,23 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Kenepa\Banner\Facades\Banner;
-use Kenepa\Banner\ValueObjects\Banner as BannerObject;
+use Kenepa\Banner\Facades\BannerManager;
+use Kenepa\Banner\ValueObjects\BannerData;
+use Kenepa\Banner\Banner;
 
 class BannerManagerPage extends Page
 {
     public ?array $data = [];
 
     /**
-     * @var BannerObject[]
+     * @var BannerContainer[]
      */
     public $banners;
 
-    public BannerObject|null $selectedBanner = null;
+    public ?Banner $selectedBanner = null;
 
     protected static string $view = 'banner::pages.banner-manager';
+
     protected static ?string $navigationIcon = 'heroicon-o-megaphone';
 
     protected static ?string $slug = 'banner-manager';
@@ -49,13 +50,12 @@ class BannerManagerPage extends Page
         $this->getBanners();
     }
 
-
     public function createNewBannerAction()
     {
         return Action::make('createNewBanner')
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
-            ->action(fn(array $data) => $this->createBanner($data))
+            ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
 
@@ -63,12 +63,12 @@ class BannerManagerPage extends Page
     {
         return Action::make('deleteBanner')
             ->action(function () {
-               Banner::delete($this->selectedBanner->id);
+                BannerManager::delete($this->selectedBanner->id);
 
-               $tempBanner = $this->selectedBanner;
+                $tempBanner = $this->selectedBanner;
 
-               $this->selectedBanner = null;
-               $this->getBanners();
+                $this->selectedBanner = null;
+                $this->getBanners();
 
                 Notification::make()
                     ->title('Successfully deleted banner')
@@ -94,7 +94,7 @@ class BannerManagerPage extends Page
     {
         $updatedBannerData = $this->form->getState();
 
-        Banner::update($updatedBannerData);
+        BannerManager::update($updatedBannerData);
 
         $this->getBanners();
 
@@ -106,9 +106,7 @@ class BannerManagerPage extends Page
 
     public function createBanner($data)
     {
-        Banner::store(
-            (BannerObject::fromArray($data))
-        );
+        BannerManager::store(BannerData::fromArray($data));
 
         Notification::make()
             ->title('Created successfully')
@@ -120,14 +118,13 @@ class BannerManagerPage extends Page
 
     public function getBanners(): void
     {
-        $this->banners = Banner::getAll();
+        $this->banners = BannerManager::getAll();
     }
 
     public function selectBanner(string $bannerId)
     {
         // Todo reuse findBanner index here!
-        $foundIndex = Banner::getIndex($bannerId);
-
+        $foundIndex = BannerManager::getIndex($bannerId);
 
         if ($foundIndex === false) {
             Notification::make()
@@ -143,7 +140,7 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int|bool
+    public function findBannerIndex(string $bannerId): int | bool
     {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
@@ -156,6 +153,7 @@ class BannerManagerPage extends Page
         if (is_null($this->selectedBanner)) {
             return false;
         }
+
         return $this->selectedBanner->id === $bannerId;
     }
 
@@ -167,7 +165,7 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
-                            Hidden::make('id')->default(fn() => uniqid()),
+                            Hidden::make('id')->default(fn () => uniqid()),
                             TextInput::make('name')->required(),
                             RichEditor::make('content')
                                 ->required()
@@ -178,7 +176,7 @@ class BannerManagerPage extends Page
                                     'strike',
                                     'underline',
                                     'undo',
-                                    'codeBlock'
+                                    'codeBlock',
                                 ]),
                             Fieldset::make('Options')
                                 ->schema([
@@ -199,7 +197,7 @@ class BannerManagerPage extends Page
                                 ->default('solid')
                                 ->options([
                                     'solid' => 'Solid',
-                                    'gradient' => 'Gradient'
+                                    'gradient' => 'Gradient',
                                 ])->default('solid'),
                             ColorPicker::make('start_color')
                                 ->default('#D97706')
@@ -220,12 +218,11 @@ class BannerManagerPage extends Page
 
     public static function getNavigationBadge(): ?string
     {
-        $activeBannerCount = Banner::getActiveBannerCount();
-        if ( $activeBannerCount > 0) {
+        $activeBannerCount = BannerManager::getActiveBannerCount();
+        if ($activeBannerCount > 0) {
             return (string) $activeBannerCount;
         }
 
         return null;
     }
-
 }
