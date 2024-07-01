@@ -3,6 +3,7 @@
 namespace Kenepa\Banner;
 
 use Illuminate\Support\Facades\Cache;
+use Kenepa\Banner\ValueObjects\BannerData;
 
 class BannerManager
 {
@@ -11,7 +12,7 @@ class BannerManager
      */
     public static function getAll(): array
     {
-        $bannerData = Cache::get('kenepa::banners', []);
+        $bannerData = static::getAllAsBannerData();
         $bannerObjects = [];
 
         foreach ($bannerData as $data) {
@@ -21,10 +22,28 @@ class BannerManager
         return $bannerObjects;
     }
 
+    /**
+     * @return BannerData[]
+     */
+    public static function getAllAsBannerData(): array
+    {
+        $bannersRaw = Cache::get('kenepa::banners', []);
+        $bannerData = [];
+
+        foreach ($bannersRaw as $data) {
+            $bannerData[] = BannerData::fromArray($data);
+        }
+
+        return $bannerData;
+    }
+
+    public static function getAllAsArray(): array
+    {
+        return Cache::get('kenepa::banners', []);
+    }
+
     public static function store(ValueObjects\BannerData $data): void
     {
-        $banners = static::getAll();
-
         $banner = $data;
 
         if ($banner->is_active) {
@@ -35,16 +54,14 @@ class BannerManager
 
         $banner->id = uniqid();
 
-        $banners[] = $banner;
+        $banners = static::getAllAsArray();
+        $banners[] = $banner->toArray();
 
         Cache::put('kenepa::banners', $banners);
-
-        //todo: add try catch
     }
 
     public static function update(array $data): void
     {
-        $banners = static::getAll();
         $updatedBannerData = ValueObjects\BannerData::fromArray($data);
 
         // TODO fix active since overwrite
@@ -55,7 +72,8 @@ class BannerManager
         }
 
         $bannerIndex = static::getIndex($updatedBannerData->id);
-        $banners[$bannerIndex] = $updatedBannerData;
+        $banners = static::getAll();
+        $banners[$bannerIndex] = $updatedBannerData->toArray();
 
         Cache::put('kenepa::banners', $banners);
     }
@@ -70,7 +88,7 @@ class BannerManager
         Cache::put('kenepa::banners', $banners);
     }
 
-    public static function getIndex(string $bannerId): int | bool
+    public static function getIndex(string $bannerId): int|bool
     {
         $banners = static::getAll();
 

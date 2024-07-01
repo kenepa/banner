@@ -2,13 +2,14 @@
 
 namespace Kenepa\Banner\Livewire;
 
+use Kenepa\Banner\Banner;
 use Kenepa\Banner\BannerManager;
 use Livewire\Component;
 
 class BannerContainer extends Component
 {
     /**
-     * @var BannerContainer[]
+     * @var Banner[]
      */
     public array $banners;
 

@@ -188,23 +188,40 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('Styling')
                         ->icon('heroicon-m-paint-brush')
                         ->schema([
-                            TextInput::make('icon')
-                                ->default('heroicon-m-megaphone')
-                                ->placeholder('heroicon-m-wrench'),
-                            Select::make('background_type')
-                                ->reactive()
-                                ->selectablePlaceholder(false)
-                                ->default('solid')
-                                ->options([
-                                    'solid' => 'Solid',
-                                    'gradient' => 'Gradient',
-                                ])->default('solid'),
-                            ColorPicker::make('start_color')
-                                ->default('#D97706')
+                            ColorPicker::make('text_color')
+                                ->default('#FFFFFF')
                                 ->required(),
-                            ColorPicker::make('end_color')
-                                ->default('#F59E0C')
-                                ->visible(fn ($get) => $get('background_type') === 'gradient'),
+
+                            Fieldset::make('Icon')
+                                ->schema([
+                                    ColorPicker::make('icon_color')
+                                        ->label('Color')
+                                        ->default('#fafafa')
+                                        ->required(),
+                                    TextInput::make('icon')
+                                        ->default('heroicon-m-megaphone')
+                                        ->placeholder('heroicon-m-wrench'),
+                                ])
+                                ->columns(3),
+                            Fieldset::make('Background')
+                                ->schema([
+                                    Select::make('background_type')
+                                        ->label('Type')
+                                        ->reactive()
+                                        ->selectablePlaceholder(false)
+                                        ->default('solid')
+                                        ->options([
+                                            'solid' => 'Solid',
+                                            'gradient' => 'Gradient',
+                                        ])->default('solid'),
+                                    ColorPicker::make('start_color')
+                                        ->default('#D97706')
+                                        ->required(),
+                                    ColorPicker::make('end_color')
+                                        ->default('#F59E0C')
+                                        ->visible(fn ($get) => $get('background_type') === 'gradient'),
+                                ])
+                                ->columns(3),
                         ]),
                     Tabs\Tab::make('Scheduling')
                         ->icon('heroicon-m-clock')

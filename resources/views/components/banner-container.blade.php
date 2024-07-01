@@ -11,7 +11,7 @@
                     $end_color = $banner->start_color;
                 }
             @endphp
-            <div style="background-color: {{ $banner->start_color }}; background-image: linear-gradient(to right, {{ $start_color }}, {{ $end_color }}) ;color:white;" id="{{ $banner->id }}"
+            <div style="background-color: {{ $banner->start_color }}; background-image: linear-gradient(to right, {{ $start_color }}, {{ $end_color }}) ;color: {{ $banner->text_color ?? '#FFFFFF' }};" id="{{ $banner->id }}"
                  class="grid grid-cols-12 pl-6 py-2 pr-8">
                 <div class="col-span-11 flex items-center">
                     <div>

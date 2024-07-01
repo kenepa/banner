@@ -4,18 +4,20 @@ namespace Kenepa\Banner\ValueObjects;
 class BannerData
 {
     public function __construct(
-        public string $id,
-        public string $name,
-        public string $content,
-        public string $is_active,
+        public string      $id,
+        public string      $name,
+        public string      $content,
+        public string      $is_active,
         public string|null $active_since,
         public string|null $icon,
-        public string $background_type,
-        public string $start_color,
+        public string      $background_type,
+        public string      $start_color,
         public string|null $end_color,
         public string|null $start_time,
         public string|null $end_time,
-        public bool $can_be_closed_by_user,
+        public bool        $can_be_closed_by_user,
+        public string|null $text_color,
+        public string|null $icon_color,
     )
     {
     }
@@ -36,6 +38,8 @@ class BannerData
             $data['start_time'],
             $data['end_time'],
             $data['can_be_closed_by_user'],
+            $data['text_color'] ?? null,
+            $data['icon_color'] ?? null,
         );
     }
 
@@ -55,6 +59,8 @@ class BannerData
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'can_be_closed_by_user' => $this->can_be_closed_by_user,
+            'text_color' => $this->text_color,
+            'icon_color' => $this->icon_color,
         ];
     }
 
