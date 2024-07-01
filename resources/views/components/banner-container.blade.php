@@ -19,6 +19,7 @@
                             <x-filament::icon
                                 alias="banner::close"
                                 :icon="$banner->icon"
+                                style="color: {{ $banner->icon_color ?? '#FFFFFF' }}"
                                 class="h-6 w-6 mr-2 text-gray-500 dark:text-gray-400 text-white"
                             />
                         @endif

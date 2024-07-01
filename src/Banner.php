@@ -22,6 +22,7 @@ class Banner implements Wireable
         public ?string $end_time,
         public bool $can_be_closed_by_user,
         public ?string $text_color,
+        public ?string $icon_color,
     ) {
     }
 
@@ -41,6 +42,7 @@ class Banner implements Wireable
             $data->end_time,
             $data->can_be_closed_by_user,
             $data->text_color,
+            $data->icon_color,
         );
     }
 
@@ -60,6 +62,7 @@ class Banner implements Wireable
             'end_time' => $this->end_time,
             'can_be_closed_by_user' => $this->can_be_closed_by_user,
             'text_color' => $this->text_color,
+            'icon_color' => $this->icon_color,
         ];
     }
 
@@ -79,6 +82,7 @@ class Banner implements Wireable
             $value['end_time'],
             $value['can_be_closed_by_user'],
             $value['text_color'],
+            $value['icon_color'],
         );
     }
 
