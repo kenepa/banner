@@ -8,18 +8,18 @@ use Livewire\Wireable;
 class Banner implements Wireable
 {
     public function __construct(
-        public string      $id,
-        public string      $name,
-        public string      $content,
-        public string      $is_active,
+        public string $id,
+        public string $name,
+        public string $content,
+        public string $is_active,
         public string|null $active_since,
         public string|null $icon,
-        public string      $background_type,
-        public string      $start_color,
+        public string $background_type,
+        public string $start_color,
         public string|null $end_color,
         public string|null $start_time,
         public string|null $end_time,
-        public bool        $can_be_closed_by_user,
+        public bool $can_be_closed_by_user,
     )
     {
     }
@@ -43,8 +43,7 @@ class Banner implements Wireable
         );
     }
 
-
-    public function toLivewire()
+    public function toLivewire(): array
     {
         return [
             'id' => $this->id,
@@ -58,7 +57,7 @@ class Banner implements Wireable
             'end_color' => $this->end_color,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
-            'can_be_closed_by_user' => $this->can_be_closed_by_user
+            'can_be_closed_by_user' => $this->can_be_closed_by_user,
         ];
     }
 
