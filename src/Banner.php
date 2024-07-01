@@ -23,8 +23,7 @@ class Banner implements Wireable
         public bool $can_be_closed_by_user,
         public ?string $text_color,
         public ?string $icon_color,
-    ) {
-    }
+    ) {}
 
     public static function fromData(BannerData $data): static
     {
@@ -107,8 +106,5 @@ class Banner implements Wireable
         return false;
     }
 
-    public function isScheduled(): bool
-    {
-
-    }
+    public function isScheduled(): bool {}
 }

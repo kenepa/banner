@@ -16,9 +16,9 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Kenepa\Banner\Banner;
 use Kenepa\Banner\Facades\BannerManager;
 use Kenepa\Banner\ValueObjects\BannerData;
-use Kenepa\Banner\Banner;
 
 class BannerManagerPage extends Page
 {
