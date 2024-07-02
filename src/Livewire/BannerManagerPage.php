@@ -4,6 +4,7 @@ namespace Kenepa\Banner\Livewire;
 
 use BladeUI\Icons\IconsManifest;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -18,7 +19,9 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Resources\Resource;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Str;
 use Kenepa\Banner\Banner;
 use Kenepa\Banner\Facades\BannerManager;
 use Kenepa\Banner\ValueObjects\BannerData;
@@ -47,9 +50,7 @@ class BannerManagerPage extends Page
     public function mount(): void
     {
         $this->getIcons();
-        //        dd(ProductResource::getPages()['index']->getPage());
-        //        dd(Filament::getCurrentPanel()->getIcons());
-        //        dd(Filament::getCurrentPanel()->getResources());
+        $this->getScopes();
 
         $this->form->fill();
 
@@ -62,7 +63,7 @@ class BannerManagerPage extends Page
             ->label('Create')
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
-            ->action(fn (array $data) => $this->createBanner($data))
+            ->action(fn(array $data) => $this->createBanner($data))
             ->slideOver();
     }
 
@@ -146,7 +147,7 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int | bool
+    public function findBannerIndex(string $bannerId): int|bool
     {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
@@ -171,7 +172,7 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
-                            Hidden::make('id')->default(fn () => uniqid()),
+                            Hidden::make('id')->default(fn() => uniqid()),
                             TextInput::make('name')->required(),
                             RichEditor::make('content')
                                 ->required()
@@ -188,6 +189,11 @@ class BannerManagerPage extends Page
                             Select::make('render_location')
                                 ->searchable()
                                 ->required()
+                                ->hintAction( \Filament\Forms\Components\Actions\Action::make('help')
+                                    ->icon('heroicon-o-question-mark-circle')
+                                    ->extraAttributes(["class" => "text-gray-500"])
+                                    ->label("")
+                                    ->tooltip('With render location, you can select where a banner is rendered on the page. In combination with scopes, this becomes a powerful tool to manage where and when your banners are displayed. You can choose to render banners in the header, sidebar, or other strategic locations to maximize their visibility and impact.'))
                                 ->options([
                                     'Panel' => [
                                         PanelsRenderHook::BODY_START => 'Header',
@@ -223,17 +229,14 @@ class BannerManagerPage extends Page
                                 ]),
 
                             Select::make('scope')
+                                ->hintAction( \Filament\Forms\Components\Actions\Action::make('help')
+                                    ->icon('heroicon-o-question-mark-circle')
+                                    ->extraAttributes(["class" => "text-gray-500"])
+                                    ->label("")
+                                    ->tooltip('With scoping, you can control where your banner is displayed. You can target your banner to specific pages or entire resources, ensuring it is shown to the right audience at the right time.'))
                                 ->searchable()
-                                ->options([
-                                    'In Process' => [
-                                        'draft' => 'Draft',
-                                        'reviewing' => 'Reviewing',
-                                    ],
-                                    'Reviewed' => [
-                                        'published' => 'Published',
-                                        'rejected' => 'Rejected',
-                                    ],
-                                ]),
+                                ->multiple()
+                                ->options(fn () => $this->getScopes()),
 
                             Fieldset::make('Options')
                                 ->schema([
@@ -280,7 +283,7 @@ class BannerManagerPage extends Page
                                         ->required(),
                                     ColorPicker::make('end_color')
                                         ->default('#F59E0C')
-                                        ->visible(fn ($get) => $get('background_type') === 'gradient'),
+                                        ->visible(fn($get) => $get('background_type') === 'gradient'),
                                 ])
                                 ->columns(3),
 
@@ -337,7 +340,7 @@ class BannerManagerPage extends Page
     {
         $activeBannerCount = BannerManager::getActiveBannerCount();
         if ($activeBannerCount > 0) {
-            return (string) $activeBannerCount;
+            return (string)$activeBannerCount;
         }
 
         return null;
@@ -350,5 +353,45 @@ class BannerManagerPage extends Page
         $heroicons = app(IconsManifest::class)->getManifest(['heroicons'])['heroicons'];
 
         return array_values($heroicons)[0];
+    }
+
+    private function getScopes(): array
+    {
+        /**
+         * @var Resource[] $resources
+         */
+        $resources = $this->getPanelResources();
+        $scopes = [];
+
+        foreach ($resources as $resource) {
+            $resourceSlug = $resource::getSlug();
+            $resourcePath = str($resource)->value();
+            $scopes[$resourceSlug] = [$resourcePath => Str::afterLast(str($resourcePath), '\\')];
+            $scopes[$resourceSlug] = array_merge($scopes[$resourceSlug], $this->getPagesForResource($resource));
+        }
+
+        return $scopes;
+    }
+
+    /**
+     * @param Resource $resourceClass
+     * @return string[]
+     */
+    private function getPagesForResource($resourceClass): array
+    {
+        $pages = [];
+
+        foreach ($resourceClass::getPages() as $page) {
+            $pageClass = $page->getPage();
+            $pageName = Str::afterLast($pageClass, '\\');
+            $pages[$pageClass] = $pageName;
+        }
+
+        return $pages;
+    }
+
+    private function getPanelResources(): array
+    {
+        return array_values(Filament::getCurrentPanel()->getResources());
     }
 }

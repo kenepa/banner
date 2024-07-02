@@ -1,6 +1,6 @@
 <div
     @class([
-        'pt-4' => $banner->isVisible() && $banner->getLocation() === 'panel',
+        'mt-4' => $banner->isVisible() && $banner->getLocation() === 'panel',
         '' => $banner->isVisible() && $banner->getLocation() === 'body',
         '' => $banner->isVisible() && $banner->getLocation() === 'nav',
         '' => $banner->isVisible() && $banner->getLocation() === 'global_search',

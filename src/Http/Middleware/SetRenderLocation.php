@@ -9,12 +9,13 @@ class SetRenderLocation
 {
     public function handle($request, \Closure $next)
     {
-        $banner = BannerManager::getAll();
+        $banners = BannerManager::getAll();
 
-        foreach ($banner as $banner) {
+        foreach ($banners as $banner) {
             FilamentView::registerRenderHook(
                 $banner->render_location,
                 fn () => view('banner::components.banner', ['banner' => $banner]),
+                scopes: empty($banner->scope) ? null : $banner->scope
             );
         }
 

@@ -24,7 +24,8 @@ class Banner implements Wireable
         public bool $can_be_closed_by_user,
         public ?string $text_color,
         public ?string $icon_color,
-        public ?string $render_location
+        public ?string $render_location,
+        public ?array $scope,
     ) {}
 
     public static function fromData(BannerData $data): static
@@ -44,7 +45,8 @@ class Banner implements Wireable
             $data->can_be_closed_by_user,
             $data->text_color,
             $data->icon_color,
-            $data->render_location
+            $data->render_location,
+            $data->scope
         );
     }
 
@@ -66,6 +68,7 @@ class Banner implements Wireable
             'text_color' => $this->text_color,
             'icon_color' => $this->icon_color,
             'render_location' => $this->render_location,
+            'scope' => $this->scope,
         ];
     }
 
@@ -86,7 +89,8 @@ class Banner implements Wireable
             $value['can_be_closed_by_user'],
             $value['text_color'],
             $value['icon_color'],
-            $value['render_location']
+            $value['render_location'],
+            $value['scope'],
         );
     }
 
@@ -150,10 +154,10 @@ class Banner implements Wireable
     public function getLocation(): string
     {
         return match ($this->render_location) {
-            'body' => PanelsRenderHook::BODY_START,
-            'panel' => PanelsRenderHook::PAGE_START || PanelsRenderHook::PAGE_END,
-            'nav' => PanelsRenderHook::SIDEBAR_NAV_START || PanelsRenderHook::SIDEBAR_NAV_END,
-            'global_search' => PanelsRenderHook::GLOBAL_SEARCH_BEFORE || PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+            PanelsRenderHook::BODY_START => 'body',
+            PanelsRenderHook::PAGE_START, PanelsRenderHook::PAGE_END => 'panel',
+            PanelsRenderHook::SIDEBAR_NAV_START, PanelsRenderHook::SIDEBAR_NAV_END => 'nav',
+            PanelsRenderHook::GLOBAL_SEARCH_BEFORE, PanelsRenderHook::GLOBAL_SEARCH_AFTER => 'global_search',
             default => ''
         };
     }

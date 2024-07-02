@@ -20,6 +20,7 @@ class BannerData
         public ?string $text_color,
         public ?string $icon_color,
         public ?string $render_location,
+        public ?array $scope,
     ) {}
 
     // Todo: add defaults to all
@@ -41,6 +42,7 @@ class BannerData
             $data['text_color'] ?? null,
             $data['icon_color'] ?? null,
             $data['render_location'] ?? null,
+            $data['scope'] ?? null,
         );
     }
 
@@ -62,6 +64,7 @@ class BannerData
             'text_color' => $this->text_color,
             'icon_color' => $this->icon_color,
             'render_location' => $this->render_location,
+            'scope' => $this->scope,
         ];
     }
 }
