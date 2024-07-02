@@ -17,9 +17,18 @@
                         </x-slot>
 
                         <x-filament::dropdown.list>
-                            <x-filament::dropdown.list.item wire:click="openDeleteModal">
-                                Delete all
+                            <x-filament::dropdown.list.item
+                                icon="heroicon-m-no-symbol"
+                                wire:click="disableAllBanners">
+                                Disable all banners
                             </x-filament::dropdown.list.item>
+
+                            <x-filament::dropdown.list.item
+                                icon="heroicon-m-power"
+                                wire:click="enableAllBanners">
+                                Enable all banners
+                            </x-filament::dropdown.list.item>
+
                         </x-filament::dropdown.list>
                     </x-filament::dropdown>
                 </x-slot>

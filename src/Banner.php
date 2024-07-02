@@ -2,90 +2,163 @@
 
 namespace Kenepa\Banner;
 
-use Illuminate\Support\Facades\Cache;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Carbon;
+use Kenepa\Banner\ValueObjects\BannerData;
+use Livewire\Wireable;
 
-class Banner
+class Banner implements Wireable
 {
-    /**
-     * @return ValueObjects\Banner[]
-     */
-    public static function getAll(): array
+    public function __construct(
+        public string $id,
+        public string $name,
+        public string $content,
+        public string $is_active,
+        public ?string $active_since,
+        public ?string $icon,
+        public string $background_type,
+        public string $start_color,
+        public ?string $end_color,
+        public ?string $start_time,
+        public ?string $end_time,
+        public bool $can_be_closed_by_user,
+        public ?string $text_color,
+        public ?string $icon_color,
+        public ?string $render_location,
+        public ?array $scope,
+    ) {}
+
+    public static function fromData(BannerData $data): static
     {
-        return Cache::get('kenepa::banners', []);
+        return new static(
+            $data->id,
+            $data->name,
+            $data->content,
+            $data->is_active,
+            $data->active_since,
+            $data->icon,
+            $data->background_type,
+            $data->start_color,
+            $data->end_color,
+            $data->start_time,
+            $data->end_time,
+            $data->can_be_closed_by_user,
+            $data->text_color,
+            $data->icon_color,
+            $data->render_location,
+            $data->scope
+        );
     }
 
-    public static function store(ValueObjects\Banner $data): void
+    public function toLivewire(): array
     {
-        $banners = static::getAll();
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'content' => $this->content,
+            'is_active' => $this->is_active,
+            'active_since' => $this->active_since,
+            'icon' => $this->icon,
+            'background_type' => $this->background_type,
+            'start_color' => $this->start_color,
+            'end_color' => $this->end_color,
+            'start_time' => $this->start_time,
+            'end_time' => $this->end_time,
+            'can_be_closed_by_user' => $this->can_be_closed_by_user,
+            'text_color' => $this->text_color,
+            'icon_color' => $this->icon_color,
+            'render_location' => $this->render_location,
+            'scope' => $this->scope,
+        ];
+    }
 
-        $banner = $data;
+    public static function fromLivewire($value)
+    {
+        return new static(
+            $value['id'],
+            $value['name'],
+            $value['content'],
+            $value['is_active'],
+            $value['active_since'],
+            $value['icon'],
+            $value['background_type'],
+            $value['start_color'],
+            $value['end_color'],
+            $value['start_time'],
+            $value['end_time'],
+            $value['can_be_closed_by_user'],
+            $value['text_color'],
+            $value['icon_color'],
+            $value['render_location'],
+            $value['scope'],
+        );
+    }
 
-        if ($banner->is_active) {
-            $banner->active_since = now();
-        } else {
-            $banner->active_since = null;
+    public function isVisible(): bool
+    {
+        if ($this->is_active && $this->canViewBasedOnSchedule()) {
+            return true;
         }
 
-        $banner->id = uniqid();
-
-        $banners[] = $banner;
-
-        Cache::put('kenepa::banners', $banners);
-
-        //todo: add try catch
+        return false;
     }
 
-    public static function update(array $data): void
+    // TODO write: test
+    public function canViewBasedOnSchedule(): bool
     {
-        $banners = static::getAll();
-        $updatedBannerData = ValueObjects\Banner::fromArray($data);
+        $start_time = Carbon::parse($this->start_time);
+        $end_time = Carbon::parse($this->end_time);
 
-        // TODO fix active since overwrite
-        if ($updatedBannerData->is_active) {
-            $updatedBannerData->active_since = now();
-        } else {
-            $updatedBannerData->active_since = null;
+        if ($this->hasNoScheduleSet()) {
+            return true;
         }
 
-        $bannerIndex = static::getIndex($updatedBannerData->id);
-        $banners[$bannerIndex] = $updatedBannerData;
+        if ($this->hasOnlyEndTime() && now() < $end_time) {
+            return true;
+        }
 
-        Cache::put('kenepa::banners', $banners);
+        if ($this->hasOnlyStartTime() && now() > $start_time) {
+            return true;
+        }
+
+        if ($this->hasSchedule() & $start_time < now() && now() < $end_time) {
+            return true;
+        }
+
+        return false;
     }
 
-    public static function delete(string $bannerId)
+    //TODO: Extract funcs to trait
+    public function hasNoScheduleSet(): bool
     {
-        $banners = static::getAll();
-        $bannerIndex = static::getIndex($bannerId);
-
-        array_splice($banners, $bannerIndex, 1);
-
-        Cache::put('kenepa::banners', $banners);
+        return is_null($this->start_time) && is_null($this->end_time);
     }
 
-    public static function getIndex(string $bannerId): int | bool
+    public function hasOnlyStartTime(): bool
     {
-        $banners = static::getAll();
-
-        return array_search($bannerId, array_column($banners, 'id'));
+        return ! is_null($this->start_time) && is_null($this->end_time);
     }
 
-    /**
-     * @return ValueObjects\Banner[]
-     */
-    public static function getActiveBanners(): array
+    public function hasOnlyEndTime(): bool
     {
-        $banners = static::getAll();
-
-        return array_filter($banners, function (ValueObjects\Banner $banner) {
-            return $banner->is_active;
-        });
+        return ! is_null($this->end_time) && is_null($this->start_time);
     }
 
-    public static function getActiveBannerCount(): int
+    public function hasSchedule(): bool
     {
-        $banners = static::getActiveBanners();
+        return ! is_null($this->start_time) && ! is_null($this->end_time);
+    }
 
-        return count($banners);
+    public function isScheduled(): bool {}
+
+    public function getLocation(): string
+    {
+        return match ($this->render_location) {
+            PanelsRenderHook::BODY_START => 'body',
+            PanelsRenderHook::PAGE_START, PanelsRenderHook::PAGE_END => 'panel',
+            PanelsRenderHook::SIDEBAR_NAV_START, PanelsRenderHook::SIDEBAR_NAV_END => 'nav',
+            PanelsRenderHook::GLOBAL_SEARCH_BEFORE, PanelsRenderHook::GLOBAL_SEARCH_AFTER => 'global_search',
+            default => ''
+        };
     }
 }

@@ -8,14 +8,10 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
-use Filament\Support\Facades\FilamentView;
-use Filament\View\PanelsRenderHook;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Blade;
 use Kenepa\Banner\Commands\BannerCommand;
 use Kenepa\Banner\Testing\TestsBanner;
 use Livewire\Features\SupportTesting\Testable;
-use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -88,13 +84,6 @@ class BannerServiceProvider extends PackageServiceProvider
                 ], 'banner-stubs');
             }
         }
-
-        Livewire::component('kenepa-banner', \Kenepa\Banner\Livewire\Banner::class);
-
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::BODY_START,
-            fn (): string => Blade::render('@livewire(\'kenepa-banner\')'),
-        );
 
         // Testing
         Testable::mixin(new TestsBanner());

@@ -2,7 +2,9 @@
 
 namespace Kenepa\Banner\Livewire;
 
+use BladeUI\Icons\IconsManifest;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -14,21 +16,26 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Kenepa\Banner\Facades\Banner;
-use Kenepa\Banner\ValueObjects\Banner as BannerObject;
+use Filament\Resources\Resource;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Str;
+use Kenepa\Banner\Banner;
+use Kenepa\Banner\Facades\BannerManager;
+use Kenepa\Banner\ValueObjects\BannerData;
 
 class BannerManagerPage extends Page
 {
     public ?array $data = [];
 
     /**
-     * @var BannerObject[]
+     * @var BannerContainer[]
      */
-    public $banners;
+    public $banners = [];
 
-    public ?BannerObject $selectedBanner = null;
+    public ?Banner $selectedBanner = null;
 
     protected static string $view = 'banner::pages.banner-manager';
 
@@ -42,7 +49,8 @@ class BannerManagerPage extends Page
 
     public function mount(): void
     {
-        $this->banners = [];
+        $this->getIcons();
+        $this->getScopes();
 
         $this->form->fill();
 
@@ -52,8 +60,10 @@ class BannerManagerPage extends Page
     public function createNewBannerAction()
     {
         return Action::make('createNewBanner')
+            ->label('Create')
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
+            ->closeModalByClickingAway(false)
             ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
@@ -62,9 +72,7 @@ class BannerManagerPage extends Page
     {
         return Action::make('deleteBanner')
             ->action(function () {
-                Banner::delete($this->selectedBanner->id);
-
-                $tempBanner = $this->selectedBanner;
+                BannerManager::delete($this->selectedBanner->id);
 
                 $this->selectedBanner = null;
                 $this->getBanners();
@@ -93,7 +101,7 @@ class BannerManagerPage extends Page
     {
         $updatedBannerData = $this->form->getState();
 
-        Banner::update($updatedBannerData);
+        BannerManager::update(BannerData::fromArray($updatedBannerData));
 
         $this->getBanners();
 
@@ -105,9 +113,7 @@ class BannerManagerPage extends Page
 
     public function createBanner($data)
     {
-        Banner::store(
-            (BannerObject::fromArray($data))
-        );
+        BannerManager::store(BannerData::fromArray($data));
 
         Notification::make()
             ->title('Created successfully')
@@ -119,13 +125,13 @@ class BannerManagerPage extends Page
 
     public function getBanners(): void
     {
-        $this->banners = Banner::getAll();
+        $this->banners = BannerManager::getAll();
     }
 
     public function selectBanner(string $bannerId)
     {
         // Todo reuse findBanner index here!
-        $foundIndex = Banner::getIndex($bannerId);
+        $foundIndex = BannerManager::getIndex($bannerId);
 
         if ($foundIndex === false) {
             Notification::make()
@@ -179,6 +185,59 @@ class BannerManagerPage extends Page
                                     'undo',
                                     'codeBlock',
                                 ]),
+
+                            Select::make('render_location')
+                                ->searchable()
+                                ->required()
+                                ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
+                                    ->icon('heroicon-o-question-mark-circle')
+                                    ->extraAttributes(['class' => 'text-gray-500'])
+                                    ->label('')
+                                    ->tooltip('With render location, you can select where a banner is rendered on the page. In combination with scopes, this becomes a powerful tool to manage where and when your banners are displayed. You can choose to render banners in the header, sidebar, or other strategic locations to maximize their visibility and impact.'))
+                                ->options([
+                                    'Panel' => [
+                                        PanelsRenderHook::BODY_START => 'Header',
+                                        PanelsRenderHook::PAGE_START => 'Start of page',
+                                        PanelsRenderHook::PAGE_END => 'End of page',
+                                    ],
+                                    'Authentication' => [
+                                        PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE => 'Before login Form',
+                                        PanelsRenderHook::AUTH_LOGIN_FORM_AFTER => 'After login form',
+                                        PanelsRenderHook::AUTH_PASSWORD_RESET_RESET_FORM_BEFORE => 'Before reset password form',
+                                        PanelsRenderHook::AUTH_PASSWORD_RESET_RESET_FORM_AFTER => 'After reset password form',
+                                        PanelsRenderHook::AUTH_REGISTER_FORM_BEFORE => 'Before register form',
+                                        PanelsRenderHook::AUTH_REGISTER_FORM_AFTER => 'After register form',
+                                    ],
+                                    'Global search' => [
+                                        PanelsRenderHook::GLOBAL_SEARCH_BEFORE => 'Before global search',
+                                        PanelsRenderHook::GLOBAL_SEARCH_AFTER => 'After global search',
+                                    ],
+                                    'Page Widgets' => [
+                                        PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE => 'Before header widgets',
+                                        PanelsRenderHook::PAGE_HEADER_WIDGETS_AFTER => 'After header widgets',
+                                        PanelsRenderHook::PAGE_FOOTER_WIDGETS_BEFORE => 'Before footer widgets',
+                                        PanelsRenderHook::PAGE_FOOTER_WIDGETS_AFTER => 'After footer widgets',
+                                    ],
+                                    'Sidebar' => [
+                                        PanelsRenderHook::SIDEBAR_NAV_START => 'Before sidebar navigation',
+                                        PanelsRenderHook::SIDEBAR_NAV_END => 'After sidebar navigation',
+                                    ],
+                                    'Resource Table' => [
+                                        PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE => 'Before resource table',
+                                        PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER => 'After resource table',
+                                    ],
+                                ]),
+
+                            Select::make('scope')
+                                ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
+                                    ->icon('heroicon-o-question-mark-circle')
+                                    ->extraAttributes(['class' => 'text-gray-500'])
+                                    ->label('')
+                                    ->tooltip('With scoping, you can control where your banner is displayed. You can target your banner to specific pages or entire resources, ensuring it is shown to the right audience at the right time.'))
+                                ->searchable()
+                                ->multiple()
+                                ->options(fn () => $this->getScopes()),
+
                             Fieldset::make('Options')
                                 ->schema([
                                     Checkbox::make('can_be_closed_by_user')->label('Banner can be closed by user')->columnSpan('full'),
@@ -189,29 +248,89 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('Styling')
                         ->icon('heroicon-m-paint-brush')
                         ->schema([
-                            TextInput::make('icon')
-                                ->default('heroicon-m-megaphone')
-                                ->placeholder('heroicon-m-wrench'),
-                            Select::make('background_type')
-                                ->reactive()
-                                ->selectablePlaceholder(false)
-                                ->default('solid')
-                                ->options([
-                                    'solid' => 'Solid',
-                                    'gradient' => 'Gradient',
-                                ])->default('solid'),
-                            ColorPicker::make('start_color')
-                                ->default('#D97706')
+                            ColorPicker::make('text_color')
+                                ->default('#FFFFFF')
                                 ->required(),
-                            ColorPicker::make('end_color')
-                                ->default('#F59E0C')
-                                ->visible(fn ($get) => $get('background_type') === 'gradient'),
+
+                            Fieldset::make('Icon')
+                                ->schema([
+                                    TextInput::make('icon')
+                                        ->default('heroicon-m-megaphone')
+                                        ->placeholder('heroicon-m-wrench'),
+                                    //                                    Select::make('icon')
+                                    //                                        ->searchable()
+                                    //                                        ->options(fn() => $this->getIcons())
+                                    //                                    ->columnSpan(2),
+                                    ColorPicker::make('icon_color')
+                                        ->label('Color')
+                                        ->default('#fafafa')
+                                        ->required(),
+                                ])
+                                ->columns(3),
+                            Fieldset::make('Background')
+                                ->schema([
+                                    Select::make('background_type')
+                                        ->label('Type')
+                                        ->reactive()
+                                        ->selectablePlaceholder(false)
+                                        ->default('solid')
+                                        ->options([
+                                            'solid' => 'Solid',
+                                            'gradient' => 'Gradient',
+                                        ])->default('solid'),
+                                    ColorPicker::make('start_color')
+                                        ->default('#D97706')
+                                        ->required(),
+                                    ColorPicker::make('end_color')
+                                        ->default('#F59E0C')
+                                        ->visible(fn ($get) => $get('background_type') === 'gradient'),
+                                ])
+                                ->columns(3),
+
+                            Fieldset::make('Padding')
+                                ->schema([
+                                    TextInput::make('padding_top')
+                                        ->label('Top')
+                                        ->prefixIcon('heroicon-m-arrow-up')
+                                        ->default(10)
+                                        ->integer(),
+                                    TextInput::make('padding_right')
+                                        ->label('Right')
+                                        ->prefixIcon('heroicon-m-arrow-right')
+                                        ->default(10)
+                                        ->integer(),
+                                    TextInput::make('padding_bottom')
+                                        ->label('Bottom')
+                                        ->prefixIcon('heroicon-m-arrow-down')
+                                        ->default(10)
+                                        ->integer(),
+                                    TextInput::make('padding_left')
+                                        ->label('Left')
+                                        ->prefixIcon('heroicon-m-arrow-left')
+                                        ->default(10)
+                                        ->integer(),
+                                ])
+                                ->columns(4),
                         ]),
                     Tabs\Tab::make('Scheduling')
                         ->icon('heroicon-m-clock')
                         ->schema([
-                            DateTimePicker::make('start_time'),
-                            DateTimePicker::make('end_time'),
+                            DateTimePicker::make('start_time')
+                                ->hintAction(
+                                    \Filament\Forms\Components\Actions\Action::make('reset')
+                                        ->icon('heroicon-m-arrow-uturn-left')
+                                        ->action(function (Set $set, $state) {
+                                            $set('start_time', null);
+                                        })
+                                ),
+                            DateTimePicker::make('end_time')
+                                ->hintAction(
+                                    \Filament\Forms\Components\Actions\Action::make('reset')
+                                        ->icon('heroicon-m-arrow-uturn-left')
+                                        ->action(function (Set $set, $state) {
+                                            $set('start_time', null);
+                                        })
+                                ),
                         ]),
                 ])->contained(false),
         ];
@@ -219,11 +338,82 @@ class BannerManagerPage extends Page
 
     public static function getNavigationBadge(): ?string
     {
-        $activeBannerCount = Banner::getActiveBannerCount();
+        $activeBannerCount = BannerManager::getActiveBannerCount();
         if ($activeBannerCount > 0) {
             return (string) $activeBannerCount;
         }
 
         return null;
+    }
+
+    private function getIcons(): array
+    {
+        // TODO: Add alternative option to use a free input form instead of select
+        //TODO: able to configure the sets
+        $heroicons = app(IconsManifest::class)->getManifest(['heroicons'])['heroicons'];
+
+        return array_values($heroicons)[0];
+    }
+
+    private function getScopes(): array
+    {
+        /**
+         * @var resource[] $resources
+         */
+        $resources = $this->getPanelResources();
+        $scopes = [];
+
+        foreach ($resources as $resource) {
+            $resourceSlug = $resource::getSlug();
+            $resourcePath = str($resource)->value();
+            $scopes[$resourceSlug] = [$resourcePath => Str::afterLast(str($resourcePath), '\\')];
+            $scopes[$resourceSlug] = array_merge($scopes[$resourceSlug], $this->getPagesForResource($resource));
+        }
+
+        return $scopes;
+    }
+
+    /**
+     * @param  resource  $resourceClass
+     * @return string[]
+     */
+    private function getPagesForResource($resourceClass): array
+    {
+        $pages = [];
+
+        foreach ($resourceClass::getPages() as $page) {
+            $pageClass = $page->getPage();
+            $pageName = Str::afterLast($pageClass, '\\');
+            $pages[$pageClass] = $pageName;
+        }
+
+        return $pages;
+    }
+
+    private function getPanelResources(): array
+    {
+        return array_values(Filament::getCurrentPanel()->getResources());
+    }
+
+    public function disableAllBanners()
+    {
+        BannerManager::disableAllBanners();
+        $this->getBanners();
+
+        Notification::make()
+            ->title('Disabled all banners')
+            ->success()
+            ->send();
+    }
+
+    public function enableAllBanners()
+    {
+        BannerManager::enableAllBanners();
+        $this->getBanners();
+
+        Notification::make()
+            ->title('Enabled all banners')
+            ->success()
+            ->send();
     }
 }
