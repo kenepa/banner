@@ -29,7 +29,6 @@ class BannerManager
     {
         $bannersRaw = Cache::get('kenepa::banners', []);
         $bannerData = [];
-
         foreach ($bannersRaw as $data) {
             $bannerData[] = BannerData::fromArray($data);
         }
@@ -60,9 +59,9 @@ class BannerManager
         Cache::put('kenepa::banners', $banners);
     }
 
-    public static function update(array $data): void
+    public static function update(BannerData $data): void
     {
-        $updatedBannerData = ValueObjects\BannerData::fromArray($data);
+        $updatedBannerData = $data;
 
         // TODO fix active since overwrite
         if ($updatedBannerData->is_active) {
@@ -72,7 +71,7 @@ class BannerManager
         }
 
         $bannerIndex = static::getIndex($updatedBannerData->id);
-        $banners = static::getAll();
+        $banners = static::getAllAsArray();
         $banners[$bannerIndex] = $updatedBannerData->toArray();
 
         Cache::put('kenepa::banners', $banners);

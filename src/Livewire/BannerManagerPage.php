@@ -59,6 +59,7 @@ class BannerManagerPage extends Page
     public function createNewBannerAction()
     {
         return Action::make('createNewBanner')
+            ->label('Create')
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
             ->action(fn (array $data) => $this->createBanner($data))
@@ -98,7 +99,8 @@ class BannerManagerPage extends Page
     {
         $updatedBannerData = $this->form->getState();
 
-        BannerManager::update($updatedBannerData);
+
+        BannerManager::update(BannerData::fromArray($updatedBannerData));
 
         $this->getBanners();
 
