@@ -63,6 +63,7 @@ class BannerManagerPage extends Page
             ->label('Create')
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
+            ->closeModalByClickingAway(false)
             ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
@@ -392,5 +393,25 @@ class BannerManagerPage extends Page
     private function getPanelResources(): array
     {
         return array_values(Filament::getCurrentPanel()->getResources());
+    }
+
+    public function disableAllBanners() {
+        BannerManager::disableAllBanners();
+        $this->getBanners();
+
+        Notification::make()
+            ->title('Disabled all banners')
+            ->success()
+            ->send();
+    }
+
+    public function enableAllBanners() {
+        BannerManager::enableAllBanners();
+        $this->getBanners();
+
+        Notification::make()
+            ->title('Enabled all banners')
+            ->success()
+            ->send();
     }
 }

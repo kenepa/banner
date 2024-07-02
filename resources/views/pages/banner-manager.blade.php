@@ -7,6 +7,32 @@
                     {{ $this->createNewBanner }}
                 </x-slot>
 
+                <x-slot name="headerEnd">
+                    <x-filament::dropdown >
+                        <x-slot name="trigger">
+                            <x-filament::icon-button
+                                icon="heroicon-m-ellipsis-vertical"
+                                label="Extra option"
+                            />
+                        </x-slot>
+
+                        <x-filament::dropdown.list>
+                            <x-filament::dropdown.list.item
+                                icon="heroicon-m-no-symbol"
+                                wire:click="disableAllBanners">
+                                Disable all banners
+                            </x-filament::dropdown.list.item>
+
+                            <x-filament::dropdown.list.item
+                                icon="heroicon-m-power"
+                                wire:click="enableAllBanners">
+                                Enable all banners
+                            </x-filament::dropdown.list.item>
+
+                        </x-filament::dropdown.list>
+                    </x-filament::dropdown>
+                </x-slot>
+
                 @if($banners)
                     <div class="space-y-2 font-medium text-sm">
                         @foreach($banners as $banner)

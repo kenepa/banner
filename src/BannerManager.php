@@ -87,7 +87,7 @@ class BannerManager
         Cache::put('kenepa::banners', $banners);
     }
 
-    public static function getIndex(string $bannerId): int | bool
+    public static function getIndex(string $bannerId): int|bool
     {
         $banners = static::getAll();
 
@@ -111,5 +111,27 @@ class BannerManager
         $banners = static::getActiveBanners();
 
         return count($banners);
+    }
+
+    public static function disableAllBanners(): void
+    {
+        $banners = static::getAllAsArray();
+
+        foreach ($banners as $key => $value) {
+            $banners[$key]['is_active'] = false;
+        }
+
+        Cache::put('kenepa::banners', $banners);
+    }
+
+    public static function enableAllBanners(): void
+    {
+        $banners = static::getAllAsArray();
+
+        foreach ($banners as $key => $value) {
+            $banners[$key]['is_active'] = true;
+        }
+
+        Cache::put('kenepa::banners', $banners);
     }
 }
