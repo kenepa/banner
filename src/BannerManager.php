@@ -79,7 +79,7 @@ class BannerManager
 
     public static function delete(string $bannerId)
     {
-        $banners = static::getAll();
+        $banners = static::getAllAsArray();
         $bannerIndex = static::getIndex($bannerId);
 
         array_splice($banners, $bannerIndex, 1);
