@@ -63,7 +63,7 @@ class BannerManagerPage extends Page
             ->label('Create')
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
-            ->action(fn(array $data) => $this->createBanner($data))
+            ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
 
@@ -99,7 +99,6 @@ class BannerManagerPage extends Page
     public function updateBanner()
     {
         $updatedBannerData = $this->form->getState();
-
 
         BannerManager::update(BannerData::fromArray($updatedBannerData));
 
@@ -147,7 +146,7 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int|bool
+    public function findBannerIndex(string $bannerId): int | bool
     {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
@@ -172,7 +171,7 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
-                            Hidden::make('id')->default(fn() => uniqid()),
+                            Hidden::make('id')->default(fn () => uniqid()),
                             TextInput::make('name')->required(),
                             RichEditor::make('content')
                                 ->required()
@@ -189,10 +188,10 @@ class BannerManagerPage extends Page
                             Select::make('render_location')
                                 ->searchable()
                                 ->required()
-                                ->hintAction( \Filament\Forms\Components\Actions\Action::make('help')
+                                ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
-                                    ->extraAttributes(["class" => "text-gray-500"])
-                                    ->label("")
+                                    ->extraAttributes(['class' => 'text-gray-500'])
+                                    ->label('')
                                     ->tooltip('With render location, you can select where a banner is rendered on the page. In combination with scopes, this becomes a powerful tool to manage where and when your banners are displayed. You can choose to render banners in the header, sidebar, or other strategic locations to maximize their visibility and impact.'))
                                 ->options([
                                     'Panel' => [
@@ -229,10 +228,10 @@ class BannerManagerPage extends Page
                                 ]),
 
                             Select::make('scope')
-                                ->hintAction( \Filament\Forms\Components\Actions\Action::make('help')
+                                ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
-                                    ->extraAttributes(["class" => "text-gray-500"])
-                                    ->label("")
+                                    ->extraAttributes(['class' => 'text-gray-500'])
+                                    ->label('')
                                     ->tooltip('With scoping, you can control where your banner is displayed. You can target your banner to specific pages or entire resources, ensuring it is shown to the right audience at the right time.'))
                                 ->searchable()
                                 ->multiple()
@@ -283,7 +282,7 @@ class BannerManagerPage extends Page
                                         ->required(),
                                     ColorPicker::make('end_color')
                                         ->default('#F59E0C')
-                                        ->visible(fn($get) => $get('background_type') === 'gradient'),
+                                        ->visible(fn ($get) => $get('background_type') === 'gradient'),
                                 ])
                                 ->columns(3),
 
@@ -340,7 +339,7 @@ class BannerManagerPage extends Page
     {
         $activeBannerCount = BannerManager::getActiveBannerCount();
         if ($activeBannerCount > 0) {
-            return (string)$activeBannerCount;
+            return (string) $activeBannerCount;
         }
 
         return null;
@@ -358,7 +357,7 @@ class BannerManagerPage extends Page
     private function getScopes(): array
     {
         /**
-         * @var Resource[] $resources
+         * @var resource[] $resources
          */
         $resources = $this->getPanelResources();
         $scopes = [];
@@ -374,7 +373,7 @@ class BannerManagerPage extends Page
     }
 
     /**
-     * @param Resource $resourceClass
+     * @param  resource  $resourceClass
      * @return string[]
      */
     private function getPagesForResource($resourceClass): array
