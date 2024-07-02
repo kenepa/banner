@@ -395,7 +395,8 @@ class BannerManagerPage extends Page
         return array_values(Filament::getCurrentPanel()->getResources());
     }
 
-    public function disableAllBanners() {
+    public function disableAllBanners()
+    {
         BannerManager::disableAllBanners();
         $this->getBanners();
 
@@ -405,7 +406,8 @@ class BannerManagerPage extends Page
             ->send();
     }
 
-    public function enableAllBanners() {
+    public function enableAllBanners()
+    {
         BannerManager::enableAllBanners();
         $this->getBanners();
 
