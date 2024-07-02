@@ -21,7 +21,7 @@ class BannerPlugin implements Plugin
         ]);
 
         $panel->middleware([
-            SetRenderLocation::class
+            SetRenderLocation::class,
         ]);
     }
 

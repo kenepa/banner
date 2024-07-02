@@ -19,9 +19,9 @@ use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\View\PanelsRenderHook;
+use Kenepa\Banner\Banner;
 use Kenepa\Banner\Facades\BannerManager;
 use Kenepa\Banner\ValueObjects\BannerData;
-use Kenepa\Banner\Banner;
 
 class BannerManagerPage extends Page
 {
@@ -31,6 +31,7 @@ class BannerManagerPage extends Page
      * @var BannerContainer[]
      */
     public $banners = [];
+
     public ?Banner $selectedBanner = null;
 
     protected static string $view = 'banner::pages.banner-manager';
@@ -46,9 +47,9 @@ class BannerManagerPage extends Page
     public function mount(): void
     {
         $this->getIcons();
-//        dd(ProductResource::getPages()['index']->getPage());
-//        dd(Filament::getCurrentPanel()->getIcons());
-//        dd(Filament::getCurrentPanel()->getResources());
+        //        dd(ProductResource::getPages()['index']->getPage());
+        //        dd(Filament::getCurrentPanel()->getIcons());
+        //        dd(Filament::getCurrentPanel()->getResources());
 
         $this->form->fill();
 
@@ -60,7 +61,7 @@ class BannerManagerPage extends Page
         return Action::make('createNewBanner')
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
-            ->action(fn(array $data) => $this->createBanner($data))
+            ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
 
@@ -143,7 +144,7 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int|bool
+    public function findBannerIndex(string $bannerId): int | bool
     {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
@@ -168,7 +169,7 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
-                            Hidden::make('id')->default(fn() => uniqid()),
+                            Hidden::make('id')->default(fn () => uniqid()),
                             TextInput::make('name')->required(),
                             RichEditor::make('content')
                                 ->required()
@@ -216,7 +217,7 @@ class BannerManagerPage extends Page
                                     'Resource Table' => [
                                         PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE => 'Before resource table',
                                         PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER => 'After resource table',
-                                    ]
+                                    ],
                                 ]),
 
                             Select::make('scope')
@@ -251,10 +252,10 @@ class BannerManagerPage extends Page
                                     TextInput::make('icon')
                                         ->default('heroicon-m-megaphone')
                                         ->placeholder('heroicon-m-wrench'),
-//                                    Select::make('icon')
-//                                        ->searchable()
-//                                        ->options(fn() => $this->getIcons())
-//                                    ->columnSpan(2),
+                                    //                                    Select::make('icon')
+                                    //                                        ->searchable()
+                                    //                                        ->options(fn() => $this->getIcons())
+                                    //                                    ->columnSpan(2),
                                     ColorPicker::make('icon_color')
                                         ->label('Color')
                                         ->default('#fafafa')
@@ -277,7 +278,7 @@ class BannerManagerPage extends Page
                                         ->required(),
                                     ColorPicker::make('end_color')
                                         ->default('#F59E0C')
-                                        ->visible(fn($get) => $get('background_type') === 'gradient'),
+                                        ->visible(fn ($get) => $get('background_type') === 'gradient'),
                                 ])
                                 ->columns(3),
 
@@ -302,7 +303,7 @@ class BannerManagerPage extends Page
                                         ->label('Left')
                                         ->prefixIcon('heroicon-m-arrow-left')
                                         ->default(10)
-                                        ->integer()
+                                        ->integer(),
                                 ])
                                 ->columns(4),
                         ]),
@@ -334,7 +335,7 @@ class BannerManagerPage extends Page
     {
         $activeBannerCount = BannerManager::getActiveBannerCount();
         if ($activeBannerCount > 0) {
-            return (string)$activeBannerCount;
+            return (string) $activeBannerCount;
         }
 
         return null;
@@ -345,6 +346,7 @@ class BannerManagerPage extends Page
         // TODO: Add alternative option to use a free input form instead of select
         //TODO: able to configure the sets
         $heroicons = app(IconsManifest::class)->getManifest(['heroicons'])['heroicons'];
+
         return array_values($heroicons)[0];
     }
 }

@@ -10,24 +10,22 @@ use Livewire\Wireable;
 class Banner implements Wireable
 {
     public function __construct(
-        public string  $id,
-        public string  $name,
-        public string  $content,
-        public string  $is_active,
+        public string $id,
+        public string $name,
+        public string $content,
+        public string $is_active,
         public ?string $active_since,
         public ?string $icon,
-        public string  $background_type,
-        public string  $start_color,
+        public string $background_type,
+        public string $start_color,
         public ?string $end_color,
         public ?string $start_time,
         public ?string $end_time,
-        public bool    $can_be_closed_by_user,
+        public bool $can_be_closed_by_user,
         public ?string $text_color,
         public ?string $icon_color,
         public ?string $render_location
-    )
-    {
-    }
+    ) {}
 
     public static function fromData(BannerData $data): static
     {
@@ -67,7 +65,7 @@ class Banner implements Wireable
             'can_be_closed_by_user' => $this->can_be_closed_by_user,
             'text_color' => $this->text_color,
             'icon_color' => $this->icon_color,
-            'render_location' => $this->render_location
+            'render_location' => $this->render_location,
         ];
     }
 
@@ -107,7 +105,6 @@ class Banner implements Wireable
         $start_time = Carbon::parse($this->start_time);
         $end_time = Carbon::parse($this->end_time);
 
-
         if ($this->hasNoScheduleSet()) {
             return true;
         }
@@ -135,22 +132,20 @@ class Banner implements Wireable
 
     public function hasOnlyStartTime(): bool
     {
-        return !is_null($this->start_time) && is_null($this->end_time);
+        return ! is_null($this->start_time) && is_null($this->end_time);
     }
 
     public function hasOnlyEndTime(): bool
     {
-        return !is_null($this->end_time) && is_null($this->start_time);
+        return ! is_null($this->end_time) && is_null($this->start_time);
     }
 
     public function hasSchedule(): bool
     {
-        return !is_null($this->start_time) && !is_null($this->end_time);
+        return ! is_null($this->start_time) && ! is_null($this->end_time);
     }
 
-    public function isScheduled(): bool
-    {
-    }
+    public function isScheduled(): bool {}
 
     public function getLocation(): string
     {

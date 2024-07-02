@@ -11,7 +11,6 @@ class SetRenderLocation
     {
         $banner = BannerManager::getAll();
 
-
         foreach ($banner as $banner) {
             FilamentView::registerRenderHook(
                 $banner->render_location,
