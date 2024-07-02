@@ -2,6 +2,7 @@
 
 namespace Kenepa\Banner;
 
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Carbon;
 use Kenepa\Banner\ValueObjects\BannerData;
 use Livewire\Wireable;
@@ -9,21 +10,24 @@ use Livewire\Wireable;
 class Banner implements Wireable
 {
     public function __construct(
-        public string $id,
-        public string $name,
-        public string $content,
-        public string $is_active,
+        public string  $id,
+        public string  $name,
+        public string  $content,
+        public string  $is_active,
         public ?string $active_since,
         public ?string $icon,
-        public string $background_type,
-        public string $start_color,
+        public string  $background_type,
+        public string  $start_color,
         public ?string $end_color,
         public ?string $start_time,
         public ?string $end_time,
-        public bool $can_be_closed_by_user,
+        public bool    $can_be_closed_by_user,
         public ?string $text_color,
         public ?string $icon_color,
-    ) {}
+        public ?string $render_location
+    )
+    {
+    }
 
     public static function fromData(BannerData $data): static
     {
@@ -42,6 +46,7 @@ class Banner implements Wireable
             $data->can_be_closed_by_user,
             $data->text_color,
             $data->icon_color,
+            $data->render_location
         );
     }
 
@@ -62,6 +67,7 @@ class Banner implements Wireable
             'can_be_closed_by_user' => $this->can_be_closed_by_user,
             'text_color' => $this->text_color,
             'icon_color' => $this->icon_color,
+            'render_location' => $this->render_location
         ];
     }
 
@@ -82,6 +88,7 @@ class Banner implements Wireable
             $value['can_be_closed_by_user'],
             $value['text_color'],
             $value['icon_color'],
+            $value['render_location']
         );
     }
 
@@ -94,17 +101,65 @@ class Banner implements Wireable
         return false;
     }
 
+    // TODO write: test
     public function canViewBasedOnSchedule(): bool
     {
         $start_time = Carbon::parse($this->start_time);
         $end_time = Carbon::parse($this->end_time);
 
-        if ($start_time < now() && now() < $end_time) {
+
+        if ($this->hasNoScheduleSet()) {
+            return true;
+        }
+
+        if ($this->hasOnlyEndTime() && now() < $end_time) {
+            return true;
+        }
+
+        if ($this->hasOnlyStartTime() && now() > $start_time) {
+            return true;
+        }
+
+        if ($this->hasSchedule() & $start_time < now() && now() < $end_time) {
             return true;
         }
 
         return false;
     }
 
-    public function isScheduled(): bool {}
+    //TODO: Extract funcs to trait
+    public function hasNoScheduleSet(): bool
+    {
+        return is_null($this->start_time) && is_null($this->end_time);
+    }
+
+    public function hasOnlyStartTime(): bool
+    {
+        return !is_null($this->start_time) && is_null($this->end_time);
+    }
+
+    public function hasOnlyEndTime(): bool
+    {
+        return !is_null($this->end_time) && is_null($this->start_time);
+    }
+
+    public function hasSchedule(): bool
+    {
+        return !is_null($this->start_time) && !is_null($this->end_time);
+    }
+
+    public function isScheduled(): bool
+    {
+    }
+
+    public function getLocation(): string
+    {
+        return match ($this->render_location) {
+            'body' => PanelsRenderHook::BODY_START,
+            'panel' => PanelsRenderHook::PAGE_START || PanelsRenderHook::PAGE_END,
+            'nav' => PanelsRenderHook::SIDEBAR_NAV_START || PanelsRenderHook::SIDEBAR_NAV_END,
+            'global_search' => PanelsRenderHook::GLOBAL_SEARCH_BEFORE || PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+            default => ''
+        };
+    }
 }

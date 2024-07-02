@@ -89,13 +89,6 @@ class BannerServiceProvider extends PackageServiceProvider
             }
         }
 
-        Livewire::component('kenepa-banner', \Kenepa\Banner\Livewire\BannerContainer::class);
-
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::BODY_START,
-            fn (): string => Blade::render('@livewire(\'kenepa-banner\')'),
-        );
-
         // Testing
         Testable::mixin(new TestsBanner());
     }

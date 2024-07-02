@@ -4,6 +4,7 @@ namespace Kenepa\Banner;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Kenepa\Banner\Http\Middleware\SetRenderLocation;
 use Kenepa\Banner\Livewire\BannerManagerPage;
 
 class BannerPlugin implements Plugin
@@ -17,6 +18,10 @@ class BannerPlugin implements Plugin
     {
         $panel->pages([
             BannerManagerPage::class,
+        ]);
+
+        $panel->middleware([
+            SetRenderLocation::class
         ]);
     }
 

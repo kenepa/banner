@@ -1,25 +1,29 @@
 <?php
 
 namespace Kenepa\Banner\ValueObjects;
+use Filament\View\PanelsRenderHook;
 
 class BannerData
 {
     public function __construct(
-        public string $id,
-        public string $name,
-        public string $content,
-        public string $is_active,
-        public ?string $active_since,
-        public ?string $icon,
-        public string $background_type,
-        public string $start_color,
-        public ?string $end_color,
-        public ?string $start_time,
-        public ?string $end_time,
-        public bool $can_be_closed_by_user,
-        public ?string $text_color,
-        public ?string $icon_color,
-    ) {}
+        public string      $id,
+        public string      $name,
+        public string      $content,
+        public string      $is_active,
+        public string|null $active_since,
+        public string|null $icon,
+        public string      $background_type,
+        public string      $start_color,
+        public string|null $end_color,
+        public string|null $start_time,
+        public string|null $end_time,
+        public bool        $can_be_closed_by_user,
+        public string|null $text_color,
+        public string|null $icon_color,
+        public string|null $render_location,
+    )
+    {
+    }
 
     // Todo: add defaults to all
     public static function fromArray(array $data): BannerData
@@ -39,8 +43,10 @@ class BannerData
             $data['can_be_closed_by_user'],
             $data['text_color'] ?? null,
             $data['icon_color'] ?? null,
+            $data['render_location'] ?? null,
         );
     }
+
 
     public function toArray(): array
     {
@@ -59,6 +65,8 @@ class BannerData
             'can_be_closed_by_user' => $this->can_be_closed_by_user,
             'text_color' => $this->text_color,
             'icon_color' => $this->icon_color,
+            'render_location' => $this->render_location,
         ];
     }
+
 }
