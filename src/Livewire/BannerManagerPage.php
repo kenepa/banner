@@ -23,6 +23,7 @@ use Filament\Resources\Resource;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Str;
 use Kenepa\Banner\Banner;
+use Kenepa\Banner\Contracts\BannerStorage;
 use Kenepa\Banner\Facades\BannerManager;
 use Kenepa\Banner\ValueObjects\BannerData;
 
@@ -49,6 +50,7 @@ class BannerManagerPage extends Page
 
     public function mount(): void
     {
+
         $this->getIcons();
         $this->getScopes();
 
