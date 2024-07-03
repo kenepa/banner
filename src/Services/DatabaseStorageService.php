@@ -10,7 +10,6 @@ use Kenepa\Banner\ValueObjects\BannerData;
 
 class DatabaseStorageService implements BannerStorage
 {
-
     public function store(BannerData $data)
     {
         BannerModel::create(['data' => $data->toArray()]);
@@ -59,7 +58,7 @@ class DatabaseStorageService implements BannerStorage
     public function getActiveBanners(): array
     {
         return Cache::rememberForever('kenepa::db-active-banners', function () {
-           return BannerModel::all()->where('is_active', true)->toArray();
+            return BannerModel::all()->where('is_active', true)->toArray();
         });
     }
 
@@ -71,7 +70,7 @@ class DatabaseStorageService implements BannerStorage
     public function disableAllBanners(): void
     {
         BannerModel::query()->update([
-            'data->is_active' => false
+            'data->is_active' => false,
         ]);
         $this->forgetCache();
     }
@@ -79,7 +78,7 @@ class DatabaseStorageService implements BannerStorage
     public function enableAllBanners(): void
     {
         BannerModel::query()->update([
-            'data->is_active' => true
+            'data->is_active' => true,
         ]);
         $this->forgetCache();
     }

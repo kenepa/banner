@@ -16,5 +16,4 @@ enum ScheduleStatus: string implements \Filament\Support\Contracts\HasLabel
             self::Fulfilled => __('banner::manager.status_fulfilled'),
         };
     }
-
 }

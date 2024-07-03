@@ -46,7 +46,7 @@ class BannerManagerPage extends Page
 
     public function mount(): void
     {
-//        $this->getIcons();
+        //        $this->getIcons();
         $this->getScopes();
 
         $this->form->fill();
@@ -61,7 +61,7 @@ class BannerManagerPage extends Page
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
             ->closeModalByClickingAway(false)
-            ->action(fn(array $data) => $this->createBanner($data))
+            ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
 
@@ -144,7 +144,7 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int|bool
+    public function findBannerIndex(string $bannerId): int | bool
     {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
@@ -169,7 +169,7 @@ class BannerManagerPage extends Page
                     Tabs\Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
-                            Hidden::make('id')->default(fn() => uniqid()),
+                            Hidden::make('id')->default(fn () => uniqid()),
                             TextInput::make('name')->required()->label(__('banner::form.fields.name')),
                             RichEditor::make('content')
                                 ->required()
@@ -233,7 +233,7 @@ class BannerManagerPage extends Page
                                     ->tooltip(__('banner::form.fields.scope_help')))
                                 ->searchable()
                                 ->multiple()
-                                ->options(fn() => $this->getScopes())
+                                ->options(fn () => $this->getScopes())
                                 ->label(__('banner::form.fields.scope')),
                             Fieldset::make(__('banner::form.fields.options'))
                                 ->schema([
@@ -276,7 +276,7 @@ class BannerManagerPage extends Page
                                         ->default('solid')
                                         ->options([
                                             'solid' => __('banner::form.fields.background_type_solid'),
-                                            'gradient' =>__('banner::form.fields.background_type_gradient')
+                                            'gradient' => __('banner::form.fields.background_type_gradient'),
                                         ])->default('solid'),
                                     ColorPicker::make('start_color')
                                         ->label(__('banner::form.fields.start_color'))
@@ -285,7 +285,7 @@ class BannerManagerPage extends Page
                                     ColorPicker::make('end_color')
                                         ->label(__('banner::form.fields.end_color'))
                                         ->default('#F59E0C')
-                                        ->visible(fn($get) => $get('background_type') === 'gradient'),
+                                        ->visible(fn ($get) => $get('background_type') === 'gradient'),
                                 ])
                                 ->columns(3),
                         ]),
@@ -293,7 +293,7 @@ class BannerManagerPage extends Page
                         ->reactive()
                         ->icon('heroicon-m-clock')
                         ->badgeIcon('heroicon-m-eye')
-                        ->badge(fn($get) => $this->calculateScheduleStatus($get('start_time'), $get('end_time')))
+                        ->badge(fn ($get) => $this->calculateScheduleStatus($get('start_time'), $get('end_time')))
                         ->schema([
                             DateTimePicker::make('start_time')
                                 ->hintAction(
@@ -318,12 +318,11 @@ class BannerManagerPage extends Page
         ];
     }
 
-
     public static function getNavigationBadge(): ?string
     {
         $activeBannerCount = BannerManager::getActiveBannerCount();
         if ($activeBannerCount > 0) {
-            return (string)$activeBannerCount;
+            return (string) $activeBannerCount;
         }
 
         return null;
@@ -357,7 +356,7 @@ class BannerManagerPage extends Page
     }
 
     /**
-     * @param resource $resourceClass
+     * @param  resource  $resourceClass
      * @return string[]
      */
     private function getPagesForResource($resourceClass): array
@@ -400,7 +399,7 @@ class BannerManagerPage extends Page
             ->send();
     }
 
-    private function calculateScheduleStatus($start_time, $end_time): ScheduleStatus|string
+    private function calculateScheduleStatus($start_time, $end_time): ScheduleStatus | string
     {
 
         if (is_null($start_time) && is_null($end_time)) {
@@ -444,17 +443,17 @@ class BannerManagerPage extends Page
         return '';
     }
 
-    public function getTitle(): string|Htmlable
+    public function getTitle(): string | Htmlable
     {
         return BannerPlugin::get()->getTitle();
     }
 
-    public function getSubheading(): Htmlable|string|null
+    public function getSubheading(): Htmlable | string | null
     {
         return BannerPlugin::get()->getSubheading();
     }
 
-    public static function getNavigationIcon(): string|Htmlable|null
+    public static function getNavigationIcon(): string | Htmlable | null
     {
         return BannerPlugin::get()->getNavigationIcon();
     }

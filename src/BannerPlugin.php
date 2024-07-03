@@ -12,11 +12,14 @@ use Kenepa\Banner\Services\DatabaseStorageService;
 
 class BannerPlugin implements Plugin
 {
-
     protected bool $persistBannersInDatabase = false;
+
     protected ?string $title = 'Banner Manager';
+
     protected ?string $subheading = 'Manage your banners';
+
     protected ?string $navigationIcon = 'heroicon-o-megaphone';
+
     protected ?string $navigationGroup = '';
 
     protected ?int $navigationSort = null;
@@ -77,7 +80,7 @@ class BannerPlugin implements Plugin
         return $this;
     }
 
-    public function getTitle(): string|null
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -118,17 +121,15 @@ class BannerPlugin implements Plugin
         return $this->navigationGroup;
     }
 
-    public function navigationSort(int | null $sort): static
+    public function navigationSort(?int $sort): static
     {
         $this->navigationSort = $sort;
 
         return $this;
     }
 
-    public function getNavigationSort(): int | null
+    public function getNavigationSort(): ?int
     {
         return $this->navigationSort;
     }
-
-
 }

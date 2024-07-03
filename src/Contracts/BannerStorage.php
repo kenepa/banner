@@ -23,7 +23,6 @@ interface BannerStorage
     /**
      * @return ValueObjects\BannerData[]
      */
-
     public function getActiveBanners(): array;
 
     public function getActiveBannerCount(): int;
