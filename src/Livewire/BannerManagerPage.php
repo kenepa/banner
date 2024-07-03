@@ -229,6 +229,7 @@ class BannerManagerPage extends Page
                             Select::make('scope')
                                 ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
+                                    ->label('')
                                     ->extraAttributes(['class' => 'text-gray-500'])
                                     ->tooltip(__('banner::form.fields.scope_help')))
                                 ->searchable()
@@ -422,7 +423,7 @@ class BannerManagerPage extends Page
 
         if (is_null($start_time) && $end_time) {
             if (now()->isBefore($end_time)) {
-                return ScheduleStatus::Due->getLabel();
+                return ScheduleStatus::Visible->getLabel();
             }
 
             if (now()->isAfter($end_time)) {

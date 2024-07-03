@@ -1,9 +1,9 @@
 <div
     @class([
-        'mt-4' => $banner->isVisible() && $banner->getLocation() === 'panel',
-        '' => $banner->isVisible() && $banner->getLocation() === 'body',
-        '' => $banner->isVisible() && $banner->getLocation() === 'nav',
-        '' => $banner->isVisible() && $banner->getLocation() === 'global_search',
+        'mt-4' => $banner->getLocation() === 'panel',
+        '' => $banner->getLocation() === 'body',
+        '' => $banner->getLocation() === 'nav',
+        '' => $banner->getLocation() === 'global_search',
     ])
 >
     @if($banner->isVisible())
