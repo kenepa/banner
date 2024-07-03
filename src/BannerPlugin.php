@@ -4,6 +4,7 @@ namespace Kenepa\Banner;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Illuminate\Contracts\Support\Htmlable;
 use Kenepa\Banner\Contracts\BannerStorage;
 use Kenepa\Banner\Http\Middleware\SetRenderLocation;
 use Kenepa\Banner\Livewire\BannerManagerPage;
@@ -18,7 +19,7 @@ class BannerPlugin implements Plugin
 
     protected ?string $subheading = 'Manage your banners';
 
-    protected ?string $navigationIcon = 'heroicon-o-megaphone';
+    protected string | Htmlable | null $navigationIcon = 'heroicon-o-megaphone';
 
     protected ?string $navigationGroup = '';
 
