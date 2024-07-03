@@ -4,7 +4,6 @@ namespace Kenepa\Banner;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use Illuminate\Contracts\Support\Htmlable;
 use Kenepa\Banner\Contracts\BannerStorage;
 use Kenepa\Banner\Http\Middleware\SetRenderLocation;
 use Kenepa\Banner\Livewire\BannerManagerPage;
