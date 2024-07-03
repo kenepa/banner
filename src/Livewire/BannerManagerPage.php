@@ -56,7 +56,7 @@ class BannerManagerPage extends Page
         return null;
     }
 
-    public static function getNavigationIcon(): string | Htmlable | null
+    public static function getNavigationIcon(): ?string
     {
         return BannerPlugin::get()->getNavigationIcon();
     }

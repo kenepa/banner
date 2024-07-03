@@ -19,7 +19,7 @@ class BannerPlugin implements Plugin
 
     protected ?string $subheading = 'Manage your banners';
 
-    protected string | Htmlable | null $navigationIcon = 'heroicon-o-megaphone';
+    protected ?string $navigationIcon = 'heroicon-o-megaphone';
 
     protected ?string $navigationGroup = '';
 
@@ -98,14 +98,14 @@ class BannerPlugin implements Plugin
         return $this->subheading;
     }
 
-    public function navigationIcon(string $icon): static
+    public function navigationIcon(?string $icon): static
     {
         $this->navigationIcon = $icon;
 
         return $this;
     }
 
-    public function getNavigationIcon(): string
+    public function getNavigationIcon(): ?string
     {
         return $this->navigationIcon;
     }
