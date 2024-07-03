@@ -9,7 +9,6 @@ use Kenepa\Banner\ValueObjects\BannerData;
 
 class CacheStorageService implements BannerStorage
 {
-
     public function store(BannerData $data)
     {
         $banner = $data;
