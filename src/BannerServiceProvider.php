@@ -11,7 +11,6 @@ use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
 use Kenepa\Banner\Commands\BannerCommand;
 use Kenepa\Banner\Contracts\BannerStorage;
-use Kenepa\Banner\Service\CacheService;
 use Kenepa\Banner\Services\CacheStorageService;
 use Kenepa\Banner\Services\DatabaseStorageService;
 use Kenepa\Banner\Testing\TestsBanner;
@@ -52,14 +51,13 @@ class BannerServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        $this->app->singleton(BannerStorage::class, function() {
+        $this->app->singleton(BannerStorage::class, function () {
             if (config('banner.storage') === 'database') {
                 return new DatabaseStorageService();
             }
 
             return new CacheStorageService();
         });
-
 
         // Asset Registration
         FilamentAsset::register(

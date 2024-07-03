@@ -18,7 +18,7 @@ interface BannerStorage
     /**
      * @return Banner[]
      */
-    public function getAll() : array;
+    public function getAll(): array;
 
     /**
      * @return ValueObjects\BannerData[]

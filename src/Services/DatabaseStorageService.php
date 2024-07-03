@@ -8,7 +8,6 @@ use Kenepa\Banner\ValueObjects\BannerData;
 
 class DatabaseStorageService implements BannerStorage
 {
-
     public function store(BannerData $data)
     {
         BannerModel::create(['data' => $data->toArray()]);
@@ -30,7 +29,7 @@ class DatabaseStorageService implements BannerStorage
     public function getAll(): array
     {
         $banners = BannerModel::all()->map(function (BannerModel $banner) {
-           return \Kenepa\Banner\Banner::fromData(BannerData::fromArray($banner->data));
+            return \Kenepa\Banner\Banner::fromData(BannerData::fromArray($banner->data));
         });
 
         return $banners->toArray();
@@ -68,14 +67,14 @@ class DatabaseStorageService implements BannerStorage
     public function disableAllBanners(): void
     {
         BannerModel::query()->update([
-            'data->is_active' => false
+            'data->is_active' => false,
         ]);
     }
 
     public function enableAllBanners(): void
     {
         BannerModel::query()->update([
-            'data->is_active' => true
+            'data->is_active' => true,
         ]);
     }
 }

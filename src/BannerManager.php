@@ -2,7 +2,6 @@
 
 namespace Kenepa\Banner;
 
-use Illuminate\Support\Facades\Cache;
 use Kenepa\Banner\Contracts\BannerStorage;
 use Kenepa\Banner\ValueObjects\BannerData;
 
@@ -14,6 +13,7 @@ class BannerManager
     public static function getAll(): array
     {
         $storage = app(BannerStorage::class);
+
         return $storage->getAll();
     }
 
@@ -23,12 +23,14 @@ class BannerManager
     public static function getAllAsBannerData(): array
     {
         $storage = app(BannerStorage::class);
+
         return $storage->getAllAsBannerData();
     }
 
     public static function getAllAsArray(): array
     {
         $storage = app(BannerStorage::class);
+
         return $storage->getAllAsArray();
     }
 
@@ -63,12 +65,14 @@ class BannerManager
     public static function getActiveBanners(): array
     {
         $storage = app(BannerStorage::class);
+
         return $storage->getActiveBanners();
     }
 
     public static function getActiveBannerCount(): int
     {
         $storage = app(BannerStorage::class);
+
         return $storage->getActiveBannerCount();
     }
 
