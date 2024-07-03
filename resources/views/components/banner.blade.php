@@ -6,7 +6,7 @@
         '' => $banner->getLocation() === 'global_search',
     ])
 >
-    @if($banner->isVisible())
+    @if ($banner->isVisible())
         @php
             $start_color = $banner->start_color;
             $end_color = '';
@@ -61,7 +61,7 @@
             ])>
             <div class="col-span-11 flex items-center">
                 <div>
-                    @if($banner->icon)
+                    @if ($banner->icon)
                         <x-filament::icon
                             alias="banner::close"
                             :icon="$banner->icon"
@@ -75,7 +75,7 @@
                 </div>
             </div>
             <div class="col-span-1 flex justify-end">
-                @if($banner->can_be_closed_by_user)
+                @if ($banner->can_be_closed_by_user)
                     <x-filament::icon
                         x-on:click="close"
                         alias="banner::close"

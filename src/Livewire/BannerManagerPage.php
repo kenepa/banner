@@ -5,6 +5,7 @@ namespace Kenepa\Banner\Livewire;
 use BladeUI\Icons\IconsManifest;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Actions\Action as ComponentAction;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -13,6 +14,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -31,6 +33,10 @@ use Kenepa\Banner\ValueObjects\BannerData;
 
 class BannerManagerPage extends Page
 {
+    protected static string $view = 'banner::pages.banner-manager';
+
+    protected static ?string $slug = 'banner-manager';
+
     public ?array $data = [];
 
     /**
@@ -40,9 +46,30 @@ class BannerManagerPage extends Page
 
     public ?Banner $selectedBanner = null;
 
-    protected static string $view = 'banner::pages.banner-manager';
+    public static function getNavigationBadge(): ?string
+    {
+        $activeBannerCount = BannerManager::getActiveBannerCount();
+        if ($activeBannerCount > 0) {
+            return (string) $activeBannerCount;
+        }
 
-    protected static ?string $slug = 'banner-manager';
+        return null;
+    }
+
+    public static function getNavigationIcon(): string | Htmlable | null
+    {
+        return BannerPlugin::get()->getNavigationIcon();
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return BannerPlugin::get()->getNavigationGroup();
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return BannerPlugin::get()->getNavigationSort();
+    }
 
     public function mount(): void
     {
@@ -166,7 +193,7 @@ class BannerManagerPage extends Page
         return [
             Tabs::make('Tabs')
                 ->tabs([
-                    Tabs\Tab::make('General')
+                    Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
                             Hidden::make('id')->default(fn () => uniqid()),
@@ -186,7 +213,7 @@ class BannerManagerPage extends Page
                             Select::make('render_location')
                                 ->searchable()
                                 ->required()
-                                ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
+                                ->hintAction(ComponentAction::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
                                     ->extraAttributes(['class' => 'text-gray-500'])
                                     ->label('')
@@ -227,7 +254,7 @@ class BannerManagerPage extends Page
                                 ]),
 
                             Select::make('scope')
-                                ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
+                                ->hintAction(ComponentAction::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
                                     ->label('')
                                     ->extraAttributes(['class' => 'text-gray-500'])
@@ -248,7 +275,7 @@ class BannerManagerPage extends Page
                             Toggle::make('is_active')
                                 ->label(__('banner::form.fields.is_active')),
                         ]),
-                    Tabs\Tab::make(__('banner::form.tabs.styling'))
+                    Tab::make(__('banner::form.tabs.styling'))
                         ->icon('heroicon-m-paint-brush')
                         ->schema([
                             ColorPicker::make('text_color')
@@ -290,7 +317,7 @@ class BannerManagerPage extends Page
                                 ])
                                 ->columns(3),
                         ]),
-                    Tabs\Tab::make(__('banner::form.tabs.scheduling'))
+                    Tab::make(__('banner::form.tabs.scheduling'))
                         ->reactive()
                         ->icon('heroicon-m-clock')
                         ->badgeIcon('heroicon-m-eye')
@@ -298,7 +325,8 @@ class BannerManagerPage extends Page
                         ->schema([
                             DateTimePicker::make('start_time')
                                 ->hintAction(
-                                    \Filament\Forms\Components\Actions\Action::make(__('banner::form.actions.reset'))
+                                    ComponentAction::make('reset')
+                                        ->label(__('banner::form.actions.reset'))
                                         ->icon('heroicon-m-arrow-uturn-left')
                                         ->action(function (Set $set) {
                                             $set('start_time', null);
@@ -307,7 +335,8 @@ class BannerManagerPage extends Page
                                 ->label(__('banner::form.fields.start_time')),
                             DateTimePicker::make('end_time')
                                 ->hintAction(
-                                    \Filament\Forms\Components\Actions\Action::make(__('banner::form.actions.reset'))
+                                    ComponentAction::make('reset')
+                                        ->label(__('banner::form.actions.reset'))
                                         ->icon('heroicon-m-arrow-uturn-left')
                                         ->action(function (Set $set) {
                                             $set('end_time', null);
@@ -319,14 +348,36 @@ class BannerManagerPage extends Page
         ];
     }
 
-    public static function getNavigationBadge(): ?string
+    public function disableAllBanners()
     {
-        $activeBannerCount = BannerManager::getActiveBannerCount();
-        if ($activeBannerCount > 0) {
-            return (string) $activeBannerCount;
-        }
+        BannerManager::disableAllBanners();
+        $this->getBanners();
 
-        return null;
+        Notification::make()
+            ->title(__('banner::manager.disabled_all_banners'))
+            ->success()
+            ->send();
+    }
+
+    public function enableAllBanners()
+    {
+        BannerManager::enableAllBanners();
+        $this->getBanners();
+
+        Notification::make()
+            ->title(__('banner::manager.enabled_all_banners'))
+            ->success()
+            ->send();
+    }
+
+    public function getTitle(): string | Htmlable
+    {
+        return BannerPlugin::get()->getTitle();
+    }
+
+    public function getSubheading(): Htmlable | string | null
+    {
+        return BannerPlugin::get()->getSubheading();
     }
 
     private function getIcons(): array
@@ -378,28 +429,6 @@ class BannerManagerPage extends Page
         return array_values(Filament::getCurrentPanel()->getResources());
     }
 
-    public function disableAllBanners()
-    {
-        BannerManager::disableAllBanners();
-        $this->getBanners();
-
-        Notification::make()
-            ->title(__('banner::manager.disabled_all_banners'))
-            ->success()
-            ->send();
-    }
-
-    public function enableAllBanners()
-    {
-        BannerManager::enableAllBanners();
-        $this->getBanners();
-
-        Notification::make()
-            ->title(__('banner::manager.enabled_all_banners'))
-            ->success()
-            ->send();
-    }
-
     private function calculateScheduleStatus($start_time, $end_time): ScheduleStatus | string
     {
 
@@ -442,30 +471,5 @@ class BannerManagerPage extends Page
         }
 
         return '';
-    }
-
-    public function getTitle(): string | Htmlable
-    {
-        return BannerPlugin::get()->getTitle();
-    }
-
-    public function getSubheading(): Htmlable | string | null
-    {
-        return BannerPlugin::get()->getSubheading();
-    }
-
-    public static function getNavigationIcon(): string | Htmlable | null
-    {
-        return BannerPlugin::get()->getNavigationIcon();
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return BannerPlugin::get()->getNavigationGroup();
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return BannerPlugin::get()->getNavigationSort();
     }
 }

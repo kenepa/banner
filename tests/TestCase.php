@@ -29,6 +29,16 @@ class TestCase extends Orchestra
         );
     }
 
+    public function getEnvironmentSetUp($app)
+    {
+        config()->set('database.default', 'testing');
+
+        /*
+        $migration = include __DIR__.'/../database/migrations/create_banner_table.php.stub';
+        $migration->up();
+        */
+    }
+
     protected function getPackageProviders($app)
     {
         return [
@@ -46,15 +56,5 @@ class TestCase extends Orchestra
             WidgetsServiceProvider::class,
             BannerServiceProvider::class,
         ];
-    }
-
-    public function getEnvironmentSetUp($app)
-    {
-        config()->set('database.default', 'testing');
-
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_banner_table.php.stub';
-        $migration->up();
-        */
     }
 }

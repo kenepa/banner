@@ -34,9 +34,9 @@
                     </x-filament::dropdown>
                 </x-slot>
 
-                @if($banners)
+                @if ($banners)
                     <div class="space-y-2 font-medium text-sm">
-                        @foreach($banners as $banner)
+                        @foreach ($banners as $banner)
                             <div
                                 wire:click="selectBanner('{{ $banner->id }}')"
                                 @class([
@@ -54,8 +54,8 @@
                                         ])
                                     ></div>
                                     <div class="text-xs text-gray-400">
-                                        @if($banner->is_active)
-                                           {{ __('banner::manager.active_since') }} · {{ \Carbon\Carbon::parse($banner->active_since)->diffForHumans()}}
+                                        @if ($banner->is_active)
+                                           {{ __('banner::manager.active_since') }} · {{ \Carbon\Carbon::parse($banner->active_since)->diffForHumans() }}
                                         @else
                                             {{ __('banner::manager.inactive') }}
                                         @endif
@@ -72,7 +72,7 @@
         </div>
 
         <div class="col-span-8">
-            @if($selectedBanner)
+            @if ($selectedBanner)
                 <x-filament::section>
 
                     <form wire:submit="updateBanner">

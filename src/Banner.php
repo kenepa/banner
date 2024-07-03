@@ -50,28 +50,6 @@ class Banner implements Wireable
         );
     }
 
-    public function toLivewire(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'content' => $this->content,
-            'is_active' => $this->is_active,
-            'active_since' => $this->active_since,
-            'icon' => $this->icon,
-            'background_type' => $this->background_type,
-            'start_color' => $this->start_color,
-            'end_color' => $this->end_color,
-            'start_time' => $this->start_time,
-            'end_time' => $this->end_time,
-            'can_be_closed_by_user' => $this->can_be_closed_by_user,
-            'text_color' => $this->text_color,
-            'icon_color' => $this->icon_color,
-            'render_location' => $this->render_location,
-            'scope' => $this->scope,
-        ];
-    }
-
     public static function fromLivewire($value)
     {
         return new static(
@@ -92,6 +70,28 @@ class Banner implements Wireable
             $value['render_location'],
             $value['scope'],
         );
+    }
+
+    public function toLivewire(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'content' => $this->content,
+            'is_active' => $this->is_active,
+            'active_since' => $this->active_since,
+            'icon' => $this->icon,
+            'background_type' => $this->background_type,
+            'start_color' => $this->start_color,
+            'end_color' => $this->end_color,
+            'start_time' => $this->start_time,
+            'end_time' => $this->end_time,
+            'can_be_closed_by_user' => $this->can_be_closed_by_user,
+            'text_color' => $this->text_color,
+            'icon_color' => $this->icon_color,
+            'render_location' => $this->render_location,
+            'scope' => $this->scope,
+        ];
     }
 
     public function isVisible(): bool

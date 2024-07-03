@@ -15,7 +15,7 @@ class SetRenderLocation
             if ($banner->isVisible()) {
                 FilamentView::registerRenderHook(
                     $banner->render_location,
-                    fn() => view('banner::components.banner', ['banner' => $banner]),
+                    fn () => view('banner::components.banner', ['banner' => $banner]),
                     scopes: empty($banner->scope) ? null : $banner->scope
                 );
             }
