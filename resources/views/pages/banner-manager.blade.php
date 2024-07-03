@@ -17,16 +17,17 @@
                         </x-slot>
 
                         <x-filament::dropdown.list>
-                            <x-filament::dropdown.list.item
-                                icon="heroicon-m-no-symbol"
-                                wire:click="disableAllBanners">
-                                Disable all banners
-                            </x-filament::dropdown.list.item>
 
                             <x-filament::dropdown.list.item
                                 icon="heroicon-m-power"
                                 wire:click="enableAllBanners">
-                                Enable all banners
+                                {{ __('banner::manager.enable_all_banners') }}
+                            </x-filament::dropdown.list.item>
+
+                            <x-filament::dropdown.list.item
+                                icon="heroicon-m-no-symbol"
+                                wire:click="disableAllBanners">
+                                {{ __('banner::manager.disable_all_banners') }}
                             </x-filament::dropdown.list.item>
 
                         </x-filament::dropdown.list>
@@ -54,9 +55,9 @@
                                     ></div>
                                     <div class="text-xs text-gray-400">
                                         @if($banner->is_active)
-                                            Active since · {{ \Carbon\Carbon::parse($banner->active_since)->diffForHumans()}}
+                                           {{ __('banner::manager.active_since') }} · {{ \Carbon\Carbon::parse($banner->active_since)->diffForHumans()}}
                                         @else
-                                            Inactive
+                                            {{ __('banner::manager.inactive') }}
                                         @endif
                                     </div>
                                 </div>
@@ -79,7 +80,7 @@
 
                         <div class="flex justify-between items-center">
                             <x-filament::button type="submit" class="mt-4">
-                                Save
+                                {{ __('banner::manager.save') }}
                             </x-filament::button>
 
                             {{ $this->deleteBanner }}
@@ -97,8 +98,8 @@
                                 class="h-16 w-16 p-1 text-gray-400 dark:text-gray-400"
                             />
                         </div>
-                        <h1 class="font-bold text-xl text-gray-400">No banner selected</h1>
-                        <p class="text-gray-400">Select or create a banner to get started</p>
+                        <h1 class="font-bold text-xl text-gray-400">{{ __('banner::manager.banner_edit_empty_state_title') }}</h1>
+                        <p class="text-gray-400">{{ __('banner::manager.banner_edit_empty_state_description') }}</p>
                     </div>
                 </div>
             @endif

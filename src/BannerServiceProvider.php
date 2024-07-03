@@ -52,15 +52,6 @@ class BannerServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        $this->app->singleton(BannerStorage::class, function() {
-            if (config('banner.storage') === 'database') {
-                return new DatabaseStorageService();
-            }
-
-            return new CacheStorageService();
-        });
-
-
         // Asset Registration
         FilamentAsset::register(
             $this->getAssets(),

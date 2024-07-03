@@ -17,21 +17,6 @@ class BannerManager
         return $storage->getAll();
     }
 
-    /**
-     * @return BannerData[]
-     */
-    public static function getAllAsBannerData(): array
-    {
-        $storage = app(BannerStorage::class);
-        return $storage->getAllAsBannerData();
-    }
-
-    public static function getAllAsArray(): array
-    {
-        $storage = app(BannerStorage::class);
-        return $storage->getAllAsArray();
-    }
-
     public static function store(ValueObjects\BannerData $data): void
     {
         $storage = app(BannerStorage::class);

@@ -78,7 +78,6 @@ class CacheStorageService implements BannerStorage
     {
         $updatedBannerData = $data;
 
-        // TODO fix active since overwrite
         if ($updatedBannerData->is_active) {
             $updatedBannerData->active_since = now();
         } else {

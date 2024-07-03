@@ -2,6 +2,8 @@
 
 namespace Kenepa\Banner\Services;
 
+use Illuminate\Support\Facades\Cache;
+use Kenepa\Banner\Banner;
 use Kenepa\Banner\Contracts\BannerStorage;
 use Kenepa\Banner\Models\Banner as BannerModel;
 use Kenepa\Banner\ValueObjects\BannerData;
@@ -12,11 +14,27 @@ class DatabaseStorageService implements BannerStorage
     public function store(BannerData $data)
     {
         BannerModel::create(['data' => $data->toArray()]);
+        $this->forgetCache();
+    }
+
+    public function update(BannerData $data)
+    {
+        $updatedBannerData = $data;
+
+        if ($updatedBannerData->is_active) {
+            $updatedBannerData->active_since = now();
+        } else {
+            $updatedBannerData->active_since = null;
+        }
+
+        BannerModel::whereJsonContains('data->id', $data->id)->get()->first()->update(['data' => $updatedBannerData]);
+        $this->forgetCache();
     }
 
     public function delete(string $bannerId)
     {
         BannerModel::whereJsonContains('data->id', $bannerId)->get()->first()->delete();
+        $this->forgetCache();
     }
 
     public function get(string $bannerId)
@@ -25,39 +43,24 @@ class DatabaseStorageService implements BannerStorage
     }
 
     /**
-     * @return array|\Kenepa\Banner\Banner[]
+     * @return array|Banner[]
      */
     public function getAll(): array
     {
-        $banners = BannerModel::all()->map(function (BannerModel $banner) {
-           return \Kenepa\Banner\Banner::fromData(BannerData::fromArray($banner->data));
+        $banners = Cache::rememberForever('kenepa::db-banner', function () {
+            return BannerModel::all()->map(function (BannerModel $banner) {
+                return Banner::fromData(BannerData::fromArray($banner->data));
+            });
         });
 
         return $banners->toArray();
     }
 
-    public function update(BannerData $data)
-    {
-        BannerModel::whereJsonContains('data->id', $data->id)->get()->first()->update(['data' => $data]);
-    }
-
-    public function getAllAsArray(): array
-    {
-        return BannerModel::all()->map(function (BannerModel $banner) {
-            return $banner->data;
-        })->toArray();
-    }
-
-    public function getAllAsBannerData(): array
-    {
-        return BannerModel::all()->map(function (BannerModel $banner) {
-            return BannerData::fromArray($banner->data);
-        })->toArray();
-    }
-
     public function getActiveBanners(): array
     {
-        return BannerModel::all()->where('is_active', true)->toArray();
+        return Cache::rememberForever('kenepa::db-active-banners', function () {
+           return BannerModel::all()->where('is_active', true)->toArray();
+        });
     }
 
     public function getActiveBannerCount(): int
@@ -70,6 +73,7 @@ class DatabaseStorageService implements BannerStorage
         BannerModel::query()->update([
             'data->is_active' => false
         ]);
+        $this->forgetCache();
     }
 
     public function enableAllBanners(): void
@@ -77,5 +81,11 @@ class DatabaseStorageService implements BannerStorage
         BannerModel::query()->update([
             'data->is_active' => true
         ]);
+        $this->forgetCache();
+    }
+
+    public function forgetCache(): void
+    {
+        Cache::deleteMultiple(['kenepa::db-banner', 'kenepa::db-active-banner']);
     }
 }
