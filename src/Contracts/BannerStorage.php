@@ -15,18 +15,18 @@ interface BannerStorage
 
     public function get(string $bannerId);
 
+    /**
+     * @return Banner[]
+     */
     public function getAll() : array;
 
     /**
-     * @return Banner[]
+     * @return ValueObjects\BannerData[]
      */
     public function getAllAsArray(): array;
 
     public function getAllAsBannerData(): array;
 
-    /**
-     * @return ValueObjects\BannerData[]
-     */
     public function getActiveBanners(): array;
 
     public function getActiveBannerCount(): int;
@@ -34,6 +34,4 @@ interface BannerStorage
     public function disableAllBanners(): void;
 
     public function enableAllBanners(): void;
-
-    public function getIndex(string $bannerId): int|bool;
 }

@@ -13,5 +13,5 @@ return [
      |
      */
 
-    'storage' => 'cache',
+    'storage' => 'database',
 ];

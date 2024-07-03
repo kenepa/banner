@@ -43,6 +43,9 @@ class CacheStorageService implements BannerStorage
         // TODO: Implement get() method.
     }
 
+    /**
+     * @return Banner[]
+     */
     public function getAll(): array
     {
         $bannerData = $this->getAllAsBannerData();
@@ -125,12 +128,5 @@ class CacheStorageService implements BannerStorage
         }
 
         Cache::put('kenepa::banners', $banners);
-    }
-
-    public function getIndex(string $bannerId): int|bool
-    {
-        $banners = $this->getAll();
-
-        return array_search($bannerId, array_column($banners, 'id'));
     }
 }

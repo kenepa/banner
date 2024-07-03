@@ -30,6 +30,7 @@
                 close() {
                     this.show = false;
                     let storedBanners = localStorage.getItem(this.storageKey)
+                    storedBanners = JSON.parse(storedBanners)
 
                     if (storedBanners) {
                         storedBanners.push(this.bannerId)
@@ -41,6 +42,7 @@
                 },
                 hasBeenClosedByUser() {
                     let storedBanners = localStorage.getItem(this.storageKey)
+                    console.log(storedBanners, this.bannerId)
 
                     if (storedBanners) {
                         let parsedBanners = JSON.parse(storedBanners);
