@@ -5,6 +5,7 @@ namespace Kenepa\Banner\Livewire;
 use BladeUI\Icons\IconsManifest;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Actions\Action as ComponentAction;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -13,6 +14,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -21,13 +23,20 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Str;
 use Kenepa\Banner\Banner;
+use Kenepa\Banner\BannerPlugin;
+use Kenepa\Banner\Enums\ScheduleStatus;
 use Kenepa\Banner\Facades\BannerManager;
 use Kenepa\Banner\ValueObjects\BannerData;
 
 class BannerManagerPage extends Page
 {
+    protected static string $view = 'banner::pages.banner-manager';
+
+    protected static ?string $slug = 'banner-manager';
+
     public ?array $data = [];
 
     /**
@@ -37,19 +46,34 @@ class BannerManagerPage extends Page
 
     public ?Banner $selectedBanner = null;
 
-    protected static string $view = 'banner::pages.banner-manager';
+    public static function getNavigationBadge(): ?string
+    {
+        $activeBannerCount = BannerManager::getActiveBannerCount();
+        if ($activeBannerCount > 0) {
+            return (string) $activeBannerCount;
+        }
 
-    protected static ?string $navigationIcon = 'heroicon-o-megaphone';
+        return null;
+    }
 
-    protected static ?string $slug = 'banner-manager';
+    public static function getNavigationIcon(): ?string
+    {
+        return BannerPlugin::get()->getNavigationIcon();
+    }
 
-    protected static ?string $title = 'Banner Manager';
+    public static function getNavigationGroup(): ?string
+    {
+        return BannerPlugin::get()->getNavigationGroup();
+    }
 
-    protected ?string $subheading = 'Manage your banners';
+    public static function getNavigationSort(): ?int
+    {
+        return BannerPlugin::get()->getNavigationSort();
+    }
 
     public function mount(): void
     {
-        $this->getIcons();
+        //        $this->getIcons();
         $this->getScopes();
 
         $this->form->fill();
@@ -60,7 +84,7 @@ class BannerManagerPage extends Page
     public function createNewBannerAction()
     {
         return Action::make('createNewBanner')
-            ->label('Create')
+            ->label(__('banner::manager.create'))
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
             ->closeModalByClickingAway(false)
@@ -78,7 +102,7 @@ class BannerManagerPage extends Page
                 $this->getBanners();
 
                 Notification::make()
-                    ->title('Successfully deleted banner')
+                    ->title(__('banner::manager.successfully_deleted_banner'))
                     ->icon('heroicon-m-trash')
                     ->danger()
                     ->send();
@@ -106,7 +130,7 @@ class BannerManagerPage extends Page
         $this->getBanners();
 
         Notification::make()
-            ->title('Updated successfully')
+            ->title(__('banner::manager.successfully_updated_banner'))
             ->success()
             ->send();
     }
@@ -116,7 +140,7 @@ class BannerManagerPage extends Page
         BannerManager::store(BannerData::fromArray($data));
 
         Notification::make()
-            ->title('Created successfully')
+            ->title(__('banner::manager.successfully_created_banner'))
             ->success()
             ->send();
 
@@ -135,7 +159,7 @@ class BannerManagerPage extends Page
 
         if ($foundIndex === false) {
             Notification::make()
-                ->title('Failed to load banner.')
+                ->title(__('banner::manager.failed_to_load_banner'))
                 ->danger()
                 ->send();
 
@@ -169,11 +193,11 @@ class BannerManagerPage extends Page
         return [
             Tabs::make('Tabs')
                 ->tabs([
-                    Tabs\Tab::make('General')
+                    Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
                             Hidden::make('id')->default(fn () => uniqid()),
-                            TextInput::make('name')->required(),
+                            TextInput::make('name')->required()->label(__('banner::form.fields.name')),
                             RichEditor::make('content')
                                 ->required()
                                 ->toolbarButtons([
@@ -184,166 +208,176 @@ class BannerManagerPage extends Page
                                     'underline',
                                     'undo',
                                     'codeBlock',
-                                ]),
-
+                                ])
+                                ->label(__('banner::form.fields.content')),
                             Select::make('render_location')
                                 ->searchable()
                                 ->required()
-                                ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
+                                ->hintAction(ComponentAction::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
                                     ->extraAttributes(['class' => 'text-gray-500'])
                                     ->label('')
-                                    ->tooltip('With render location, you can select where a banner is rendered on the page. In combination with scopes, this becomes a powerful tool to manage where and when your banners are displayed. You can choose to render banners in the header, sidebar, or other strategic locations to maximize their visibility and impact.'))
+                                    ->tooltip(__('banner::form.fields.render_location_help')))
+                                ->label(__('banner::form.fields.render_location'))
                                 ->options([
                                     'Panel' => [
-                                        PanelsRenderHook::BODY_START => 'Header',
-                                        PanelsRenderHook::PAGE_START => 'Start of page',
-                                        PanelsRenderHook::PAGE_END => 'End of page',
+                                        PanelsRenderHook::BODY_START => __('banner::form.fields.render_location_options.panel.header'),
+                                        PanelsRenderHook::PAGE_START => __('banner::form.fields.render_location_options.panel.page_start'),
+                                        PanelsRenderHook::PAGE_END => __('banner::form.fields.render_location_options.panel.page_end'),
                                     ],
                                     'Authentication' => [
-                                        PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE => 'Before login Form',
-                                        PanelsRenderHook::AUTH_LOGIN_FORM_AFTER => 'After login form',
-                                        PanelsRenderHook::AUTH_PASSWORD_RESET_RESET_FORM_BEFORE => 'Before reset password form',
-                                        PanelsRenderHook::AUTH_PASSWORD_RESET_RESET_FORM_AFTER => 'After reset password form',
-                                        PanelsRenderHook::AUTH_REGISTER_FORM_BEFORE => 'Before register form',
-                                        PanelsRenderHook::AUTH_REGISTER_FORM_AFTER => 'After register form',
+                                        PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE => __('banner::form.fields.render_location_options.authentication.login_form_before'),
+                                        PanelsRenderHook::AUTH_LOGIN_FORM_AFTER => __('banner::form.fields.render_location_options.authentication.login_form_after'),
+                                        PanelsRenderHook::AUTH_PASSWORD_RESET_RESET_FORM_BEFORE => __('banner::form.fields.render_location_options.authentication.password_reset_form_before'),
+                                        PanelsRenderHook::AUTH_PASSWORD_RESET_RESET_FORM_AFTER => __('banner::form.fields.render_location_options.authentication.password_reset_form_after'),
+                                        PanelsRenderHook::AUTH_REGISTER_FORM_BEFORE => __('banner::form.fields.render_location_options.authentication.register_form_before'),
+                                        PanelsRenderHook::AUTH_REGISTER_FORM_AFTER => __('banner::form.fields.render_location_options.authentication.register_form_after'),
                                     ],
                                     'Global search' => [
-                                        PanelsRenderHook::GLOBAL_SEARCH_BEFORE => 'Before global search',
-                                        PanelsRenderHook::GLOBAL_SEARCH_AFTER => 'After global search',
+                                        PanelsRenderHook::GLOBAL_SEARCH_BEFORE => __('banner::form.fields.render_location_options.global_search.before'),
+                                        PanelsRenderHook::GLOBAL_SEARCH_AFTER => __('banner::form.fields.render_location_options.global_search.after'),
                                     ],
                                     'Page Widgets' => [
-                                        PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE => 'Before header widgets',
-                                        PanelsRenderHook::PAGE_HEADER_WIDGETS_AFTER => 'After header widgets',
-                                        PanelsRenderHook::PAGE_FOOTER_WIDGETS_BEFORE => 'Before footer widgets',
-                                        PanelsRenderHook::PAGE_FOOTER_WIDGETS_AFTER => 'After footer widgets',
+                                        PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE => __('banner::form.fields.render_location_options.page_widgets.header_before'),
+                                        PanelsRenderHook::PAGE_HEADER_WIDGETS_AFTER => __('banner::form.fields.render_location_options.page_widgets.header_after'),
+                                        PanelsRenderHook::PAGE_FOOTER_WIDGETS_BEFORE => __('banner::form.fields.render_location_options.page_widgets.footer_before'),
+                                        PanelsRenderHook::PAGE_FOOTER_WIDGETS_AFTER => __('banner::form.fields.render_location_options.page_widgets.footer_after'),
                                     ],
                                     'Sidebar' => [
-                                        PanelsRenderHook::SIDEBAR_NAV_START => 'Before sidebar navigation',
-                                        PanelsRenderHook::SIDEBAR_NAV_END => 'After sidebar navigation',
+                                        PanelsRenderHook::SIDEBAR_NAV_START => __('banner::form.fields.render_location_options.sidebar.nav_start'),
+                                        PanelsRenderHook::SIDEBAR_NAV_END => __('banner::form.fields.render_location_options.sidebar.nav_end'),
                                     ],
                                     'Resource Table' => [
-                                        PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE => 'Before resource table',
-                                        PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER => 'After resource table',
+                                        PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE => __('banner::form.fields.render_location_options.resource_table.before'),
+                                        PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER => __('banner::form.fields.render_location_options.resource_table.after'),
                                     ],
                                 ]),
 
                             Select::make('scope')
-                                ->hintAction(\Filament\Forms\Components\Actions\Action::make('help')
+                                ->hintAction(ComponentAction::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
-                                    ->extraAttributes(['class' => 'text-gray-500'])
                                     ->label('')
-                                    ->tooltip('With scoping, you can control where your banner is displayed. You can target your banner to specific pages or entire resources, ensuring it is shown to the right audience at the right time.'))
+                                    ->extraAttributes(['class' => 'text-gray-500'])
+                                    ->tooltip(__('banner::form.fields.scope_help')))
                                 ->searchable()
                                 ->multiple()
-                                ->options(fn () => $this->getScopes()),
-
-                            Fieldset::make('Options')
+                                ->options(fn () => $this->getScopes())
+                                ->label(__('banner::form.fields.scope')),
+                            Fieldset::make(__('banner::form.fields.options'))
                                 ->schema([
-                                    Checkbox::make('can_be_closed_by_user')->label('Banner can be closed by user')->columnSpan('full'),
-                                    Checkbox::make('can_truncate_message')->label('Truncates the content of banner')->columnSpan('full'),
+                                    Checkbox::make('can_be_closed_by_user')
+                                        ->label(__('banner::form.fields.can_be_closed_by_user'))
+                                        ->columnSpan('full'),
+                                    Checkbox::make('can_truncate_message')
+                                        ->label(__('banner::form.fields.can_truncate_message'))
+                                        ->columnSpan('full'),
                                 ]),
-                            Toggle::make('is_active'),
+                            Toggle::make('is_active')
+                                ->label(__('banner::form.fields.is_active')),
                         ]),
-                    Tabs\Tab::make('Styling')
+                    Tab::make(__('banner::form.tabs.styling'))
                         ->icon('heroicon-m-paint-brush')
                         ->schema([
                             ColorPicker::make('text_color')
+                                ->label(__('banner::form.fields.text_color'))
                                 ->default('#FFFFFF')
                                 ->required(),
-
-                            Fieldset::make('Icon')
+                            Fieldset::make(__('banner::form.fields.icon'))
                                 ->schema([
                                     TextInput::make('icon')
+                                        ->label(__('banner::form.fields.icon'))
                                         ->default('heroicon-m-megaphone')
                                         ->placeholder('heroicon-m-wrench'),
-                                    //                                    Select::make('icon')
-                                    //                                        ->searchable()
-                                    //                                        ->options(fn() => $this->getIcons())
-                                    //                                    ->columnSpan(2),
                                     ColorPicker::make('icon_color')
-                                        ->label('Color')
+                                        ->label(__('banner::form.fields.icon_color'))
                                         ->default('#fafafa')
                                         ->required(),
                                 ])
                                 ->columns(3),
-                            Fieldset::make('Background')
+                            Fieldset::make('background')
+                                ->label(__('banner::form.fields.background'))
                                 ->schema([
                                     Select::make('background_type')
-                                        ->label('Type')
+                                        ->label(__('banner::form.fields.background_type'))
                                         ->reactive()
                                         ->selectablePlaceholder(false)
                                         ->default('solid')
                                         ->options([
-                                            'solid' => 'Solid',
-                                            'gradient' => 'Gradient',
+                                            'solid' => __('banner::form.fields.background_type_solid'),
+                                            'gradient' => __('banner::form.fields.background_type_gradient'),
                                         ])->default('solid'),
                                     ColorPicker::make('start_color')
+                                        ->label(__('banner::form.fields.start_color'))
                                         ->default('#D97706')
                                         ->required(),
                                     ColorPicker::make('end_color')
+                                        ->label(__('banner::form.fields.end_color'))
                                         ->default('#F59E0C')
                                         ->visible(fn ($get) => $get('background_type') === 'gradient'),
                                 ])
                                 ->columns(3),
-
-                            Fieldset::make('Padding')
-                                ->schema([
-                                    TextInput::make('padding_top')
-                                        ->label('Top')
-                                        ->prefixIcon('heroicon-m-arrow-up')
-                                        ->default(10)
-                                        ->integer(),
-                                    TextInput::make('padding_right')
-                                        ->label('Right')
-                                        ->prefixIcon('heroicon-m-arrow-right')
-                                        ->default(10)
-                                        ->integer(),
-                                    TextInput::make('padding_bottom')
-                                        ->label('Bottom')
-                                        ->prefixIcon('heroicon-m-arrow-down')
-                                        ->default(10)
-                                        ->integer(),
-                                    TextInput::make('padding_left')
-                                        ->label('Left')
-                                        ->prefixIcon('heroicon-m-arrow-left')
-                                        ->default(10)
-                                        ->integer(),
-                                ])
-                                ->columns(4),
                         ]),
-                    Tabs\Tab::make('Scheduling')
+                    Tab::make(__('banner::form.tabs.scheduling'))
+                        ->reactive()
                         ->icon('heroicon-m-clock')
+                        ->badgeIcon('heroicon-m-eye')
+                        ->badge(fn ($get) => $this->calculateScheduleStatus($get('start_time'), $get('end_time')))
                         ->schema([
                             DateTimePicker::make('start_time')
                                 ->hintAction(
-                                    \Filament\Forms\Components\Actions\Action::make('reset')
+                                    ComponentAction::make('reset')
+                                        ->label(__('banner::form.actions.reset'))
                                         ->icon('heroicon-m-arrow-uturn-left')
-                                        ->action(function (Set $set, $state) {
+                                        ->action(function (Set $set) {
                                             $set('start_time', null);
                                         })
-                                ),
+                                )
+                                ->label(__('banner::form.fields.start_time')),
                             DateTimePicker::make('end_time')
                                 ->hintAction(
-                                    \Filament\Forms\Components\Actions\Action::make('reset')
+                                    ComponentAction::make('reset')
+                                        ->label(__('banner::form.actions.reset'))
                                         ->icon('heroicon-m-arrow-uturn-left')
-                                        ->action(function (Set $set, $state) {
-                                            $set('start_time', null);
+                                        ->action(function (Set $set) {
+                                            $set('end_time', null);
                                         })
-                                ),
+                                )
+                                ->label(__('banner::form.fields.end_time')),
                         ]),
                 ])->contained(false),
         ];
     }
 
-    public static function getNavigationBadge(): ?string
+    public function disableAllBanners()
     {
-        $activeBannerCount = BannerManager::getActiveBannerCount();
-        if ($activeBannerCount > 0) {
-            return (string) $activeBannerCount;
-        }
+        BannerManager::disableAllBanners();
+        $this->getBanners();
 
-        return null;
+        Notification::make()
+            ->title(__('banner::manager.disabled_all_banners'))
+            ->success()
+            ->send();
+    }
+
+    public function enableAllBanners()
+    {
+        BannerManager::enableAllBanners();
+        $this->getBanners();
+
+        Notification::make()
+            ->title(__('banner::manager.enabled_all_banners'))
+            ->success()
+            ->send();
+    }
+
+    public function getTitle(): string | Htmlable
+    {
+        return BannerPlugin::get()->getTitle();
+    }
+
+    public function getSubheading(): Htmlable | string | null
+    {
+        return BannerPlugin::get()->getSubheading();
     }
 
     private function getIcons(): array
@@ -395,25 +429,47 @@ class BannerManagerPage extends Page
         return array_values(Filament::getCurrentPanel()->getResources());
     }
 
-    public function disableAllBanners()
+    private function calculateScheduleStatus($start_time, $end_time): ScheduleStatus | string
     {
-        BannerManager::disableAllBanners();
-        $this->getBanners();
 
-        Notification::make()
-            ->title('Disabled all banners')
-            ->success()
-            ->send();
-    }
+        if (is_null($start_time) && is_null($end_time)) {
+            return '';
+        }
 
-    public function enableAllBanners()
-    {
-        BannerManager::enableAllBanners();
-        $this->getBanners();
+        if ($start_time && $end_time) {
+            if (now()->between($start_time, $end_time)) {
+                return ScheduleStatus::Visible->getLabel();
+            }
 
-        Notification::make()
-            ->title('Enabled all banners')
-            ->success()
-            ->send();
+            if (now()->isAfter($end_time)) {
+                return ScheduleStatus::Fulfilled->getLabel();
+            }
+
+            if (now()->isBefore($start_time)) {
+                return ScheduleStatus::Due->getLabel();
+            }
+        }
+
+        if (is_null($start_time) && $end_time) {
+            if (now()->isBefore($end_time)) {
+                return ScheduleStatus::Visible->getLabel();
+            }
+
+            if (now()->isAfter($end_time)) {
+                return ScheduleStatus::Fulfilled->getLabel();
+            }
+        }
+
+        if (is_null($end_time) && $start_time) {
+            if (now()->isBefore($start_time)) {
+                return ScheduleStatus::Due->getLabel();
+            }
+
+            if (now()->isAfter($start_time)) {
+                return ScheduleStatus::Visible->getLabel();
+            }
+        }
+
+        return '';
     }
 }

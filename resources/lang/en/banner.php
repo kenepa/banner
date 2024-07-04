@@ -2,5 +2,4 @@
 
 // translations for Kenepa/Banner
 return [
-    //
 ];

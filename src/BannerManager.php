@@ -2,7 +2,7 @@
 
 namespace Kenepa\Banner;
 
-use Illuminate\Support\Facades\Cache;
+use Kenepa\Banner\Contracts\BannerStorage;
 use Kenepa\Banner\ValueObjects\BannerData;
 
 class BannerManager
@@ -12,79 +12,27 @@ class BannerManager
      */
     public static function getAll(): array
     {
-        $bannerData = static::getAllAsBannerData();
-        $bannerObjects = [];
+        $storage = app(BannerStorage::class);
 
-        foreach ($bannerData as $data) {
-            $bannerObjects[] = Banner::fromData($data);
-        }
-
-        return $bannerObjects;
-    }
-
-    /**
-     * @return BannerData[]
-     */
-    public static function getAllAsBannerData(): array
-    {
-        $bannersRaw = Cache::get('kenepa::banners', []);
-        $bannerData = [];
-        foreach ($bannersRaw as $data) {
-            $bannerData[] = BannerData::fromArray($data);
-        }
-
-        return $bannerData;
-    }
-
-    public static function getAllAsArray(): array
-    {
-        return Cache::get('kenepa::banners', []);
+        return $storage->getAll();
     }
 
     public static function store(ValueObjects\BannerData $data): void
     {
-        $banner = $data;
-
-        if ($banner->is_active) {
-            $banner->active_since = now();
-        } else {
-            $banner->active_since = null;
-        }
-
-        $banner->id = uniqid();
-
-        $banners = static::getAllAsArray();
-        $banners[] = $banner->toArray();
-
-        Cache::put('kenepa::banners', $banners);
+        $storage = app(BannerStorage::class);
+        $storage->store($data);
     }
 
     public static function update(BannerData $data): void
     {
-        $updatedBannerData = $data;
-
-        // TODO fix active since overwrite
-        if ($updatedBannerData->is_active) {
-            $updatedBannerData->active_since = now();
-        } else {
-            $updatedBannerData->active_since = null;
-        }
-
-        $bannerIndex = static::getIndex($updatedBannerData->id);
-        $banners = static::getAllAsArray();
-        $banners[$bannerIndex] = $updatedBannerData->toArray();
-
-        Cache::put('kenepa::banners', $banners);
+        $storage = app(BannerStorage::class);
+        $storage->update($data);
     }
 
     public static function delete(string $bannerId)
     {
-        $banners = static::getAllAsArray();
-        $bannerIndex = static::getIndex($bannerId);
-
-        array_splice($banners, $bannerIndex, 1);
-
-        Cache::put('kenepa::banners', $banners);
+        $storage = app(BannerStorage::class);
+        $storage->delete($bannerId);
     }
 
     public static function getIndex(string $bannerId): int | bool
@@ -99,39 +47,27 @@ class BannerManager
      */
     public static function getActiveBanners(): array
     {
-        $banners = static::getAll();
+        $storage = app(BannerStorage::class);
 
-        return array_filter($banners, function (Banner $banner) {
-            return $banner->is_active;
-        });
+        return $storage->getActiveBanners();
     }
 
     public static function getActiveBannerCount(): int
     {
-        $banners = static::getActiveBanners();
+        $storage = app(BannerStorage::class);
 
-        return count($banners);
+        return $storage->getActiveBannerCount();
     }
 
     public static function disableAllBanners(): void
     {
-        $banners = static::getAllAsArray();
-
-        foreach ($banners as $key => $value) {
-            $banners[$key]['is_active'] = false;
-        }
-
-        Cache::put('kenepa::banners', $banners);
+        $storage = app(BannerStorage::class);
+        $storage->disableAllBanners();
     }
 
     public static function enableAllBanners(): void
     {
-        $banners = static::getAllAsArray();
-
-        foreach ($banners as $key => $value) {
-            $banners[$key]['is_active'] = true;
-        }
-
-        Cache::put('kenepa::banners', $banners);
+        $storage = app(BannerStorage::class);
+        $storage->enableAllBanners();
     }
 }

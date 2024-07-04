@@ -1,8 +1,6 @@
 # Displays a informative banner to users
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/kenepa/banner.svg?style=flat-square)](https://packagist.org/packages/kenepa/banner)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/kenepa/banner/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/kenepa/banner/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/kenepa/banner/fix-php-code-styling.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/kenepa/banner/actions?query=workflow%3A"Fix+PHP+code+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/kenepa/banner.svg?style=flat-square)](https://packagist.org/packages/kenepa/banner)
 
 

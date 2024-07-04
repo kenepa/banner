@@ -1,12 +1,12 @@
 <div
     @class([
-        'mt-4' => $banner->isVisible() && $banner->getLocation() === 'panel',
-        '' => $banner->isVisible() && $banner->getLocation() === 'body',
-        '' => $banner->isVisible() && $banner->getLocation() === 'nav',
-        '' => $banner->isVisible() && $banner->getLocation() === 'global_search',
+        'mt-4' => $banner->getLocation() === 'panel',
+        '' => $banner->getLocation() === 'body',
+        '' => $banner->getLocation() === 'nav',
+        '' => $banner->getLocation() === 'global_search',
     ])
 >
-    @if($banner->isVisible())
+    @if ($banner->isVisible())
         @php
             $start_color = $banner->start_color;
             $end_color = '';
@@ -30,6 +30,7 @@
                 close() {
                     this.show = false;
                     let storedBanners = localStorage.getItem(this.storageKey)
+                    storedBanners = JSON.parse(storedBanners)
 
                     if (storedBanners) {
                         storedBanners.push(this.bannerId)
@@ -41,6 +42,7 @@
                 },
                 hasBeenClosedByUser() {
                     let storedBanners = localStorage.getItem(this.storageKey)
+                    console.log(storedBanners, this.bannerId)
 
                     if (storedBanners) {
                         let parsedBanners = JSON.parse(storedBanners);
@@ -59,7 +61,7 @@
             ])>
             <div class="col-span-11 flex items-center">
                 <div>
-                    @if($banner->icon)
+                    @if ($banner->icon)
                         <x-filament::icon
                             alias="banner::close"
                             :icon="$banner->icon"
@@ -73,7 +75,7 @@
                 </div>
             </div>
             <div class="col-span-1 flex justify-end">
-                @if($banner->can_be_closed_by_user)
+                @if ($banner->can_be_closed_by_user)
                     <x-filament::icon
                         x-on:click="close"
                         alias="banner::close"
