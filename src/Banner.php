@@ -13,7 +13,7 @@ class Banner implements Wireable
         public string $id,
         public string $name,
         public string $content,
-        public string $is_active,
+        public bool $is_active,
         public ?string $active_since,
         public ?string $icon,
         public string $background_type,

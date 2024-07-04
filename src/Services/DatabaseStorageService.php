@@ -46,7 +46,7 @@ class DatabaseStorageService implements BannerStorage
      */
     public function getAll(): array
     {
-        $banners = Cache::rememberForever('kenepa::db-banner', function () {
+        $banners = Cache::rememberForever('kenepa::db-banners', function () {
             return BannerModel::all()->map(function (BannerModel $banner) {
                 return Banner::fromData(BannerData::fromArray($banner->data));
             });
@@ -85,6 +85,6 @@ class DatabaseStorageService implements BannerStorage
 
     public function forgetCache(): void
     {
-        Cache::deleteMultiple(['kenepa::db-banner', 'kenepa::db-active-banner']);
+        Cache::deleteMultiple(['kenepa::db-banners', 'kenepa::db-active-banner']);
     }
 }

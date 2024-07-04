@@ -19,8 +19,6 @@ class CacheStorageService implements BannerStorage
             $banner->active_since = null;
         }
 
-        $banner->id = uniqid();
-
         $banners = $this->getAllAsArray();
         $banners[] = $banner->toArray();
 
@@ -126,5 +124,12 @@ class CacheStorageService implements BannerStorage
         }
 
         Cache::put('kenepa::banners', $banners);
+    }
+
+    public function getIndex(string $bannerId): int | bool
+    {
+        $banners = $this->getAll();
+
+        return array_search($bannerId, array_column($banners, 'id'));
     }
 }
