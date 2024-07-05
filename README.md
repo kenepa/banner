@@ -1,55 +1,228 @@
-# Displays a informative banner to users
+## Banner
 
+![](https://raw.githubusercontent.com/kenepa/Kenepa/main/art/Banner/filament-banner-banner.png)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/kenepa/banner.svg?style=flat-square)](https://packagist.org/packages/kenepa/banner)
 [![Total Downloads](https://img.shields.io/packagist/dt/kenepa/banner.svg?style=flat-square)](https://packagist.org/packages/kenepa/banner)
 
+# Introduction
 
+Filament Banner is a powerful Filament plugin that allows you to seamlessly integrate dynamic banners into your
+Filament-based application. With this plugin, you can easily create, manage, and display engaging banners that can be
+customized to your specific needs.
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Demo:
+
+#### Create banner
+
+![](https://raw.githubusercontent.com/kenepa/Kenepa/main/art/Banner/Banner_demo_1.gif)
+
+#### Create scoped banner
+
+A scoped banner is only visible on the selected resource pages.
+![](https://raw.githubusercontent.com/kenepa/Kenepa/main/art/Banner/banner_demo_2.gif)
+
+## Features
+
+- **Create Multiple Banners**: Easily create and manage multiple banners within your Filament application.
+- **Customize Banner Look**: Tailor the appearance of your banners to match your brand and design.
+- **Optional User Closing**: Allow users to close banners if desired.
+- **Banner Scheduling**: Schedule your banners to be displayed at specific times or on a recurring basis.
+- **Scoped Visibility**: Control the visibility of your banners by targeting specific pages or resources within your
+  Filament application.
+- **Render Location Control**: Select the desired locations where your banners will be displayed within your
+  application.
+- **Programmatic Banner Creation**: Utilize the BannerManager Facade to create banners programmatically.
+
+## Getting started
+
+Before we get started, it's important to know that banners can be stored in 2 ways: cache and database.
+
+By default, the plugin stores the banner in the cache. If you want to persist the banners in the database, you'll need
+to follow the additional instructions.
+
+### Cache only
+
+The cache option provides a quick and easy way to get started. It's suitable for displaying occasional or temporary
+banners, as it's faster and doesn't require additional setup. However, banners stored in the cache will be lost if the
+cache is cleared.
+
+### Database
+
+The database option is for users who need to use banners more extensively or require persistent storage. Storing banners
+in the database ensures they don't get lost, allows for better management, and offers more scalability as your
+application grows.
+By providing both options, the plugin gives you the flexibility to choose the storage method that best fits your
+application's requirements.
+
+Before we get started it's important to know that banners can be stored in 2 ways in the **cache** and **database**.
+By default the plugin stores the banner in the cache. If you want to persists the banners in the database you'll need to
+follow the additional instructions.
 
 ## Installation
 
-TODO:
-This package relies on cache storage. if you are developing locally make sure NOT use the array cache driver. because this one is not persistent.
-Make sure you have a proper caching solution for your prod environment.
+1. **Install the package via composer:**
 
-You can install the package via composer:
+    ```bash
+    composer require kenepa/banner
+    ```
 
-```bash
-composer require kenepa/banner
-```
+2. **Setup custom theme**
 
-You can publish and run the migrations with:
+   Filament v3 recommends that you create a custom theme to better support a plugin's additional Tailwind classes. After
+   [creating your custom theme](https://filamentphp.com/docs/3.x/panels/themes#creating-a-custom-theme), you should add
+   the views of the banner plugin the to your new theme's
+   tailwind.config.js file, which is typically located at `resources/css/filament/admin/tailwind.config.js`:
 
-```bash
-php artisan vendor:publish --tag="banner-migrations"
-php artisan migrate
-```
+   ```js
+     content: [
+           ...
+           './vendor/kenepa/banner/resources/**/*.php',
+       ]
+   ```
 
-You can publish the config file with:
+   Import Banner's custom stylesheet into your theme's CSS file located at `resources/css/filament/admin/theme.css`. (Be
+   aware this may differ in your project):
+   ```css
+   @import '../../../../vendor/kenepa/banner/resources/css/index.css';
+   ```
 
-```bash
-php artisan vendor:publish --tag="banner-config"
-```
+   Compile your theme:
+   ```bash
+   npm run build
+   ```
+   Run the filament upgrade command:
 
-Optionally, you can publish the views using
+   ```
+   php artisan filament:upgrade
+   ```
+3. **Add plugin to your panel**
+    ```php
+    use Kenepa\Banner\BannerPlugin;
+    use Filament\Panel;
+    
+    public function panel(Panel $panel): Panel
+    {
+    return $panel
+           // ...
+         ->plugins([
+            BannerPlugin::make()
+         ]);
+    }
+    ```
 
-```bash
-php artisan vendor:publish --tag="banner-views"
-```
+## Persists banners in database
 
-This is the contents of the published config file:
+If you want to use the database storage option, you can follow these steps:
 
-```php
-return [
-];
-```
+> Note: Your database must support JSON column type
+
+1. **Publish & run migrations**
+   You can publish and run the migrations with:
+    ```bash
+    php artisan vendor:publish --tag="banner-migrations"
+    php artisan migrate
+    ```
+2. **Configure the plugin**
+
+   Add the `persistsBannersInDatabase()` the banner plugin.
+   ```php
+    use Kenepa\Banner\BannerPlugin;
+    use Filament\Panel;
+     
+    public function panel(Panel $panel): Panel
+    {
+    return $panel
+    // ...
+    ->plugins([
+        BannerPlugin::make()
+            ->persistsBannersInDatabase()
+    ]);
+    }
+     ```
 
 ## Usage
 
+
+### Using the UI to create banners
+This package provides a comprehensive banner management system, allowing you to create, view, update, and delete banners to be displayed throughout your application.
+
+![](https://raw.githubusercontent.com/kenepa/Kenepa/main/art/Banner/banner_manager_screenshot.png)
+
+### Programmatically create banners
+
+If you want to programmatically create banners, you can use the `BannerManager` facade. The BannerManager relies on ValueObject. Because this package allows you to choose how you want to store the banner, I wanted a single way to represent a banner when interacting with the BannerManager.
+Looking for more information about what Value Objects are [this is a good read](https://martinjoo.dev/value-objects-everywhere).
+
+> Note: Functionality for the BannerManager is limited at the time because this is all that I needed for the project. But feel free to make PRs to extend its functionality.
+
+
+You'll need to create a Value Object first to represent the banner.
 ```php
-$banner = new Kenepa\Banner();
-echo $banner->echoPhrase('Hello, Kenepa!');
+$bannerData = new BannerData(
+    id: 'banner_123',
+    name: 'Promotional Banner',
+    content: 'Check out our latest sale!',
+    is_active: true,
+    active_since: '2024-06-01',
+    icon: 'discount.svg',
+    background_type: 'gradient',
+    start_color: '#FF6B6B',
+    end_color: '#FFD97D',
+    start_time: '09:00',
+    end_time: '18:00',
+    can_be_closed_by_user: true,
+    text_color: '#333333',
+    icon_color: '#FFFFFF',
+    render_location: 'header',
+    scope: ['homepage', 'product_page']
+); 
+```
+
+> You'll need generate the id of the banner your self. [Tip use `uniqid()`](https://www.php.net/manual/en/function.uniqid.php)
+
+**Create**
+
+Now you can create the Banner using the bannerData object.
+```php
+use Kenepa\Banner\Facades\BannerManager;
+
+BannerManager::store($bannerData);
+```
+
+**Get All**
+
+Now you can create the Banner using the bannerData object.
+```php
+use Kenepa\Banner\Facades\BannerManager;
+
+BannerManager::getAll();
+```
+
+**Delete**
+```php
+use Kenepa\Banner\Facades\BannerManager;
+
+BannerManager::delete('banner_id_123');
+```
+
+**Update**
+```php
+use Kenepa\Banner\Facades\BannerManager;
+$updatedBannerData = \Kenepa\Banner\ValueObjects\BannerData::fromArray([
+// ID must be the same
+'id' => 'banner_id',
+'name' => 'updated title'
+// ... all other properties of the banner 
+]);
+BannerManager::update($updatedBannerData);
+```
+
+## Optional
+
+### Publishing views
+
+```bash
+php artisan vendor:publish --tag="banner-views"
 ```
 
 ## Testing

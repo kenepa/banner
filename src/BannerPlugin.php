@@ -20,6 +20,8 @@ class BannerPlugin implements Plugin
 
     protected ?string $navigationIcon = 'heroicon-o-megaphone';
 
+    protected ?string $navigationLabel = 'Banner manager';
+
     protected ?string $navigationGroup = '';
 
     protected ?int $navigationSort = null;
@@ -131,5 +133,17 @@ class BannerPlugin implements Plugin
     public function getNavigationSort(): ?int
     {
         return $this->navigationSort;
+    }
+
+    public function getNavigationLabel()
+    {
+        return $this->navigationLabel;
+    }
+
+    public function navigationLabel(?string $label): static
+    {
+        $this->navigationLabel = $label;
+
+        return $this;
     }
 }

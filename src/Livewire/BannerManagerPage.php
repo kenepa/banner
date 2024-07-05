@@ -71,6 +71,11 @@ class BannerManagerPage extends Page
         return BannerPlugin::get()->getNavigationSort();
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return BannerPlugin::get()->getNavigationLabel();
+    }
+
     public function mount(): void
     {
         //        $this->getIcons();
