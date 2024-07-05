@@ -217,6 +217,40 @@ $updatedBannerData = \Kenepa\Banner\ValueObjects\BannerData::fromArray([
 BannerManager::update($updatedBannerData);
 ```
 
+## Configuring the Banner Plugin
+
+The `BannerPlugin` class provided by the package allows you to customize various aspects of the banner management system. This includes the plugin's title, subheading, navigation settings, and more.
+
+To customize the plugin, you can use the static `BannerPlugin::make()` method and chain the various configuration methods together.
+
+**Title and Subheading**
+
+You can set the title and subheading of the banner manager page using the `title()` and `subheading()` methods, respectively.
+
+```php
+BannerPlugin::make()
+    ->title('My Banner Manager')
+    ->subheading('Manage your website banners');
+```
+
+**Navigation Settings**
+
+The plugin also allows you to customize the navigation settings, such as the icon, label, group, and sort order.
+
+```php
+BannerPlugin::make()
+    ->navigationIcon('heroicon-o-megaphone')
+    ->navigationLabel('Banners')
+    ->navigationGroup('Marketing')
+    ->navigationSort(1);
+```
+
+- `navigationIcon()`: Sets the icon to be used in the navigation menu.
+- `navigationLabel()`: Sets the label to be used in the navigation menu.
+- `navigationGroup()`: Sets the group in which the plugin should be placed in the navigation menu.
+- `navigationSort()`: Sets the sort order of the plugin in the navigation menu.
+
+
 ## Optional
 
 ### Publishing views
@@ -249,5 +283,6 @@ Please review [our security policy](../../security/policy) on how to report secu
 - [All Contributors](../../contributors)
 
 ## License
+
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
