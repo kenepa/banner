@@ -35,7 +35,7 @@ A scoped banner is only visible on the selected resource pages.
 
 ## Getting started
 
-Before we get started, it's important to know that banners can be stored in 2 ways: cache and database.
+Before we get started, it's important to know that banners can be stored in 2 ways: **cache** and **database**.
 
 By default, the plugin stores the banner in the cache. If you want to persist the banners in the database, you'll need
 to follow the additional instructions.
@@ -43,7 +43,7 @@ to follow the additional instructions.
 ### Cache only
 
 The cache option provides a quick and easy way to get started. It's suitable for displaying occasional or temporary
-banners, as it's faster and doesn't require additional setup. However, banners stored in the cache will be lost if the
+banners, as it's faster to get started because doesn't require additional setup. However, banners stored in the cache will be lost if the
 cache is cleared.
 
 ### Database
@@ -53,10 +53,6 @@ in the database ensures they don't get lost, allows for better management, and o
 application grows.
 By providing both options, the plugin gives you the flexibility to choose the storage method that best fits your
 application's requirements.
-
-Before we get started it's important to know that banners can be stored in 2 ways in the **cache** and **database**.
-By default the plugin stores the banner in the cache. If you want to persists the banners in the database you'll need to
-follow the additional instructions.
 
 ## Installation
 
