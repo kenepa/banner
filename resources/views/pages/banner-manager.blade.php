@@ -40,8 +40,8 @@
                             <div
                                 wire:click="selectBanner('{{ $banner->id }}')"
                                 @class([
-                                    'rounded-lg hover:bg-gray-100 transition active:bg-gray-200 active:shadow-inner hover:transition-all dark:bg-gray-900 dark:ring-white/10 px-4 py-4 select-none cursor-pointer',
-                                    'bg-gray-100' => $this->isBannerActive($banner->id) ?? false
+                                    'rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 dark:active:bg-gray-700 transition active:bg-gray-800 active:shadow-inner hover:transition-all dark:bg-gray-900 dark:ring-white/10 px-4 py-4 select-none cursor-pointer',
+                                    'bg-gray-100 dark:bg-gray-800' => $this->isBannerActive($banner->id) ?? false
                                 ])
                             >
                                 <h1>{{ $banner->name }}</h1>
@@ -49,8 +49,8 @@
                                     <div
                                         @class([
                                             'h-4 w-4 rounded-full border-4  mr-1',
-                                            'bg-green-400 border-green-200' => $banner->is_active,
-                                            'bg-gray-400 border-gray-200' => ! $banner->is_active
+                                            'bg-green-400 border-green-200 dark:border-green-800' => $banner->is_active,
+                                            'bg-gray-400 border-gray-200 dark:border-gray-700' => ! $banner->is_active
                                         ])
                                     ></div>
                                     <div class="text-xs text-gray-400">
@@ -89,16 +89,16 @@
 
                 </x-filament::section>
             @else
-                <div class="h-64 bg-gray-100 shadow-inner rounded-lg flex items-center justify-center">
+                <div class="h-64 bg-gray-100 dark:bg-gray-900 shadow-inner rounded-lg flex items-center justify-center">
                     <div class="text-center select-none">
                         <div
-                            class="bg-gray-300 h-16 w-16 mx-auto p-2 rounded-full flex items-center justify-center mb-3">
+                            class="bg-gray-300 dark:bg-gray-700 h-16 w-16 mx-auto p-2 rounded-full flex items-center justify-center mb-3">
                             <x-filament::icon
                                 icon="heroicon-m-megaphone"
                                 class="h-16 w-16 p-1 text-gray-400 dark:text-gray-400"
                             />
                         </div>
-                        <h1 class="font-bold text-xl text-gray-400">{{ __('banner::manager.banner_edit_empty_state_title') }}</h1>
+                        <h1 class="font-bold text-xl text-gray-400 dark:text-white">{{ __('banner::manager.banner_edit_empty_state_title') }}</h1>
                         <p class="text-gray-400">{{ __('banner::manager.banner_edit_empty_state_description') }}</p>
                     </div>
                 </div>
