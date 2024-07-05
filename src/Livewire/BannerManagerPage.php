@@ -375,6 +375,11 @@ class BannerManagerPage extends Page
         return BannerPlugin::get()->getTitle();
     }
 
+    public static function getNavigationLabel(): string
+    {
+       return BannerPlugin::get()->getNavigationLabel();
+    }
+
     public function getSubheading(): Htmlable | string | null
     {
         return BannerPlugin::get()->getSubheading();
