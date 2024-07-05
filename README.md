@@ -106,7 +106,7 @@ application's requirements.
     }
     ```
 
-## Persists banners in database
+## Persists banners in database (optional)
 
 If you want to use the database storage option, you can follow these steps:
 
