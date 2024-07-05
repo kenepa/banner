@@ -71,6 +71,11 @@ class BannerManagerPage extends Page
         return BannerPlugin::get()->getNavigationSort();
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return BannerPlugin::get()->getNavigationLabel();
+    }
+
     public function mount(): void
     {
         //        $this->getIcons();
@@ -373,11 +378,6 @@ class BannerManagerPage extends Page
     public function getTitle(): string | Htmlable
     {
         return BannerPlugin::get()->getTitle();
-    }
-
-    public static function getNavigationLabel(): string
-    {
-       return BannerPlugin::get()->getNavigationLabel();
     }
 
     public function getSubheading(): Htmlable | string | null
