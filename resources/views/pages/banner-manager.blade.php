@@ -40,7 +40,7 @@
                             <div
                                 wire:click="selectBanner('{{ $banner->id }}')"
                                 @class([
-                                    'rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition active:bg-gray-800 active:shadow-inner hover:transition-all dark:bg-gray-900 dark:ring-white/10 px-4 py-4 select-none cursor-pointer',
+                                    'rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition dark:active:bg-gray-700 active:bg-gray-200 active:shadow-inner hover:transition-all dark:ring-white/10 px-4 py-4 select-none cursor-pointer',
                                     'bg-gray-100 dark:bg-gray-800' => $this->isBannerActive($banner->id) ?? false
                                 ])
                             >
