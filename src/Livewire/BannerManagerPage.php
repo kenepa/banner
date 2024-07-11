@@ -24,6 +24,7 @@ use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Kenepa\Banner\Banner;
 use Kenepa\Banner\BannerPlugin;
@@ -74,6 +75,21 @@ class BannerManagerPage extends Page
     public static function getNavigationLabel(): string
     {
         return BannerPlugin::get()->getNavigationLabel();
+    }
+
+    public static function canAccess(): bool
+    {
+        if (BannerPlugin::get()->getDisableBannerManager()) {
+            return false;
+        }
+
+        $bannerManagerPermission = BannerPlugin::get()->getBannerManagerAccessPermission();
+
+        if ($bannerManagerPermission) {
+            return Gate::allows($bannerManagerPermission);
+        }
+
+        return true;
     }
 
     public function mount(): void
