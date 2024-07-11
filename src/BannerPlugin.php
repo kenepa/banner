@@ -26,6 +26,10 @@ class BannerPlugin implements Plugin
 
     protected ?int $navigationSort = null;
 
+    protected ?string $bannerManagerAccessPermission = null;
+
+    protected ?bool $disableBannerManager = false;
+
     public static function make(): static
     {
         return app(static::class);
@@ -146,4 +150,29 @@ class BannerPlugin implements Plugin
 
         return $this;
     }
+
+    public function bannerManagerAccessPermission(?string $permission): static
+    {
+        $this->bannerManagerAccessPermission = $permission;
+
+        return $this;
+    }
+
+    public function getBannerManagerAccessPermission(): ?string
+    {
+        return $this->bannerManagerAccessPermission;
+    }
+
+    public function disableBannerManager(bool $disable = true): static
+    {
+        $this->disableBannerManager = $disable;
+
+        return $this;
+    }
+
+    public function getDisableBannerManager(): bool
+    {
+        return $this->disableBannerManager;
+    }
+
 }

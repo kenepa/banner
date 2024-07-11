@@ -146,8 +146,8 @@ This package provides a comprehensive banner management system, allowing you to 
 
 ### Programmatically create banners
 
-If you want to programmatically create banners, you can use the `BannerManager` facade. The BannerManager relies on ValueObject. Because this package allows you to choose how you want to store the banner, I wanted a single way to represent a banner when interacting with the BannerManager.
-Looking for more information about what Value Objects are [this is a good read](https://martinjoo.dev/value-objects-everywhere).
+If you want to programmatically create banners, you can use the `BannerManager` facade. The BannerManager uses a Banner Value Object. Because this package allows you to choose how you want to store the banner, I wanted a single way to represent a banner when interacting with the BannerManager.
+Looking for more information about what Value Objects are and why they could be useful, [I recommend this article](https://martinjoo.dev/value-objects-everywhere).
 
 > Note: Functionality for the BannerManager is limited at the time because this is all that I needed for the project. But feel free to make PRs to extend its functionality.
 
@@ -160,7 +160,7 @@ $bannerData = new BannerData(
     content: 'Check out our latest sale!',
     is_active: true,
     active_since: '2024-06-01',
-    icon: 'discount.svg',
+    icon: 'heroicon-m-wrench',
     background_type: 'gradient',
     start_color: '#FF6B6B',
     end_color: '#FFD97D',
@@ -170,7 +170,7 @@ $bannerData = new BannerData(
     text_color: '#333333',
     icon_color: '#FFFFFF',
     render_location: 'header',
-    scope: ['homepage', 'product_page']
+    scope: []
 ); 
 ```
 
@@ -187,14 +187,14 @@ BannerManager::store($bannerData);
 
 **Get All**
 
-Now you can create the Banner using the bannerData object.
 ```php
 use Kenepa\Banner\Facades\BannerManager;
 
-BannerManager::getAll();
+$banners = BannerManager::getAll();
 ```
 
 **Delete**
+
 ```php
 use Kenepa\Banner\Facades\BannerManager;
 
@@ -202,14 +202,17 @@ BannerManager::delete('banner_id_123');
 ```
 
 **Update**
+
 ```php
 use Kenepa\Banner\Facades\BannerManager;
+
 $updatedBannerData = \Kenepa\Banner\ValueObjects\BannerData::fromArray([
-// ID must be the same
-'id' => 'banner_id',
-'name' => 'updated title'
-// ... all other properties of the banner 
+    // ID must be the same
+    'id' => 'banner_id',
+    'name' => 'updated title'
+    // ... all other properties of the banner 
 ]);
+
 BannerManager::update($updatedBannerData);
 ```
 
@@ -246,6 +249,50 @@ BannerPlugin::make()
 - `navigationGroup()`: Sets the group in which the plugin should be placed in the navigation menu.
 - `navigationSort()`: Sets the sort order of the plugin in the navigation menu.
 
+**Disable Banner manager**
+You can disable the banner manager altogether. For example, if you want to disable the banner manager for a different panel without having to set permissions for that page.
+
+```php
+BannerPlugin::make()
+    ->disableBannerManager()
+```
+
+
+## Authorization
+
+### Step 1.
+
+By default, the banner manager is available for everyone. To restrict access, you'll need to add the ability (also known as "permission" within the context of the [Spatie Permission package](https://spatie.be/docs/laravel-permission/v6/introduction)) as shown below:
+```php
+BannerPlugin::make()
+    ->bannerManagerAccessPermission('banner-manager')
+```
+
+### Step 2.
+
+**Example using [Laravel gates](https://laravel.com/docs/master/authorization)**
+Inside the `boot()` method of your service provider define a gate with the same name you have configured for the plugin.
+```php
+// app/Providers/AppServiceProvider.php
+
+   public function boot()
+    {
+        Gate::define('banner-manager', function (User $user) {
+           return $user->email === 'admin@mail.com'
+        });
+    }
+```
+
+**Example using [spatie permission package](https://spatie.be/docs/laravel-permission/v6/introduction)**
+This example shows how to create a permission and assign it a users
+
+```php
+
+$permission = Permission::create(['name' => 'banner-manager'])
+auth()->user()->givePermissionTo($permission)
+```
+
+After the correct ability/permissions have been created and assigned, the banner manager will only be available to a select group of users.
 
 ## Optional
 
