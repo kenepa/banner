@@ -1,6 +1,6 @@
 <x-filament-panels::page>
     <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-4">
+        <div class="col-span-full xl:col-span-4">
             <x-filament::section>
 
                 <x-slot name="heading">
@@ -35,7 +35,7 @@
                 </x-slot>
 
                 @if ($banners)
-                    <div class="space-y-2 font-medium text-sm">
+                    <div class="space-y-2 font-medium text-sm h-64 xl:h-auto overflow-y-scroll">
                         @foreach ($banners as $banner)
                             <div
                                 wire:click="selectBanner('{{ $banner->id }}')"
@@ -71,7 +71,7 @@
             </x-filament::section>
         </div>
 
-        <div class="col-span-8">
+        <div class="col-span-full xl:col-span-8">
             @if ($selectedBanner)
                 <x-filament::section>
 
