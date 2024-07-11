@@ -174,5 +174,4 @@ class BannerPlugin implements Plugin
     {
         return $this->disableBannerManager;
     }
-
 }

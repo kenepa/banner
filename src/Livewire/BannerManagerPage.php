@@ -51,7 +51,7 @@ class BannerManagerPage extends Page
     {
         $activeBannerCount = BannerManager::getActiveBannerCount();
         if ($activeBannerCount > 0) {
-            return (string)$activeBannerCount;
+            return (string) $activeBannerCount;
         }
 
         return null;
@@ -77,6 +77,21 @@ class BannerManagerPage extends Page
         return BannerPlugin::get()->getNavigationLabel();
     }
 
+    public static function canAccess(): bool
+    {
+        if (BannerPlugin::get()->getDisableBannerManager()) {
+            return false;
+        }
+
+        $bannerManagerPermission = BannerPlugin::get()->getBannerManagerAccessPermission();
+
+        if ($bannerManagerPermission) {
+            return Gate::allows($bannerManagerPermission);
+        }
+
+        return true;
+    }
+
     public function mount(): void
     {
         //        $this->getIcons();
@@ -94,7 +109,7 @@ class BannerManagerPage extends Page
             ->form($this->getSchema())
             ->icon('heroicon-m-plus')
             ->closeModalByClickingAway(false)
-            ->action(fn(array $data) => $this->createBanner($data))
+            ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
 
@@ -177,7 +192,7 @@ class BannerManagerPage extends Page
         $this->form->fill($this->selectedBanner->toLivewire());
     }
 
-    public function findBannerIndex(string $bannerId): int|bool
+    public function findBannerIndex(string $bannerId): int | bool
     {
         return $this->banners->search(function (array $banner) use ($bannerId) {
             return $banner['id'] === $bannerId;
@@ -202,7 +217,7 @@ class BannerManagerPage extends Page
                     Tab::make('General')
                         ->icon('heroicon-m-wrench')
                         ->schema([
-                            Hidden::make('id')->default(fn() => uniqid()),
+                            Hidden::make('id')->default(fn () => uniqid()),
                             TextInput::make('name')->required()->label(__('banner::form.fields.name')),
                             RichEditor::make('content')
                                 ->required()
@@ -267,7 +282,7 @@ class BannerManagerPage extends Page
                                     ->tooltip(__('banner::form.fields.scope_help')))
                                 ->searchable()
                                 ->multiple()
-                                ->options(fn() => $this->getScopes())
+                                ->options(fn () => $this->getScopes())
                                 ->label(__('banner::form.fields.scope')),
                             Fieldset::make(__('banner::form.fields.options'))
                                 ->schema([
@@ -319,7 +334,7 @@ class BannerManagerPage extends Page
                                     ColorPicker::make('end_color')
                                         ->label(__('banner::form.fields.end_color'))
                                         ->default('#F59E0C')
-                                        ->visible(fn($get) => $get('background_type') === 'gradient'),
+                                        ->visible(fn ($get) => $get('background_type') === 'gradient'),
                                 ])
                                 ->columns(3),
                         ]),
@@ -327,7 +342,7 @@ class BannerManagerPage extends Page
                         ->reactive()
                         ->icon('heroicon-m-clock')
                         ->badgeIcon('heroicon-m-eye')
-                        ->badge(fn($get) => $this->calculateScheduleStatus($get('start_time'), $get('end_time')))
+                        ->badge(fn ($get) => $this->calculateScheduleStatus($get('start_time'), $get('end_time')))
                         ->schema([
                             DateTimePicker::make('start_time')
                                 ->hintAction(
@@ -376,12 +391,12 @@ class BannerManagerPage extends Page
             ->send();
     }
 
-    public function getTitle(): string|Htmlable
+    public function getTitle(): string | Htmlable
     {
         return BannerPlugin::get()->getTitle();
     }
 
-    public function getSubheading(): Htmlable|string|null
+    public function getSubheading(): Htmlable | string | null
     {
         return BannerPlugin::get()->getSubheading();
     }
@@ -414,7 +429,7 @@ class BannerManagerPage extends Page
     }
 
     /**
-     * @param resource $resourceClass
+     * @param  resource  $resourceClass
      * @return string[]
      */
     private function getPagesForResource($resourceClass): array
@@ -435,7 +450,7 @@ class BannerManagerPage extends Page
         return array_values(Filament::getCurrentPanel()->getResources());
     }
 
-    private function calculateScheduleStatus($start_time, $end_time): ScheduleStatus|string
+    private function calculateScheduleStatus($start_time, $end_time): ScheduleStatus | string
     {
 
         if (is_null($start_time) && is_null($end_time)) {
@@ -477,21 +492,5 @@ class BannerManagerPage extends Page
         }
 
         return '';
-    }
-
-    public static function canAccess(): bool
-    {
-        if (BannerPlugin::get()->getDisableBannerManager()) {
-            return false;
-        }
-
-
-        $bannerManagerPermission = BannerPlugin::get()->getBannerManagerAccessPermission();
-
-        if ($bannerManagerPermission) {
-            return Gate::allows($bannerManagerPermission);
-        }
-
-        return true;
     }
 }
