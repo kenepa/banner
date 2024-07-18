@@ -278,7 +278,7 @@ Inside the `boot()` method of your service provider define a gate with the same 
    public function boot()
     {
         Gate::define('banner-manager', function (User $user) {
-           return $user->email === 'admin@mail.com'
+           return $user->email === 'admin@mail.com';
         });
     }
 ```
