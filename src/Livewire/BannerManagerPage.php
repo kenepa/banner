@@ -214,7 +214,7 @@ class BannerManagerPage extends Page
         return [
             Tabs::make('Tabs')
                 ->tabs([
-                    Tab::make('General')
+                    Tab::make(__('banner::form.tabs.general'))
                         ->icon('heroicon-m-wrench')
                         ->schema([
                             Hidden::make('id')->default(fn () => uniqid()),
