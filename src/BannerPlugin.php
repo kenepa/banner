@@ -56,7 +56,7 @@ class BannerPlugin implements Plugin
 
         $panel->middleware([
             SetRenderLocation::class,
-        ]);
+        ], true);
 
         app()->singleton(BannerStorage::class, function () {
             if ($this->persistBannersInDatabase) {
