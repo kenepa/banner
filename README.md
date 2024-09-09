@@ -26,7 +26,7 @@ A scoped banner is only visible on the selected resource pages.
 - **Create Multiple Banners**: Easily create and manage multiple banners within your Filament application.
 - **Customize Banner Look**: Tailor the appearance of your banners to match your brand and design.
 - **Optional User Closing**: Allow users to close banners if desired.
-- **Banner Scheduling**: Schedule your banners to be displayed at specific times or on a recurring basis.
+- **Banner Scheduling**: Schedule your banners to be displayed at specific times.
 - **Scoped Visibility**: Control the visibility of your banners by targeting specific pages or resources within your
   Filament application.
 - **Render Location Control**: Select the desired locations where your banners will be displayed within your
