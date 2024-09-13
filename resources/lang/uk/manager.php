@@ -2,6 +2,9 @@
 
 // translations for Kenepa/Banner
 return [
+    'title' => 'Менеджер банерів',
+    'subheading' => 'Керуйте своїми банерами',
+    'navigation_label' => 'Менеджер банерів',
     'create' => 'Створити',
     'save' => 'Зберегти',
     'inactive' => 'Неактивний',

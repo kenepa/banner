@@ -14,13 +14,13 @@ class BannerPlugin implements Plugin
 {
     protected bool $persistBannersInDatabase = false;
 
-    protected ?string $title = 'Banner Manager';
+    protected ?string $title = 'banner::manager.title';
 
-    protected ?string $subheading = 'Manage your banners';
+    protected ?string $subheading = 'banner::manager.subheading';
 
     protected ?string $navigationIcon = 'heroicon-o-megaphone';
 
-    protected ?string $navigationLabel = 'Banner manager';
+    protected ?string $navigationLabel = 'banner::manager.navigation_label';
 
     protected ?string $navigationGroup = '';
 
@@ -88,7 +88,7 @@ class BannerPlugin implements Plugin
 
     public function getTitle(): ?string
     {
-        return $this->title;
+        return __($this->title);
     }
 
     public function subheading(string $subheading): static
@@ -100,7 +100,7 @@ class BannerPlugin implements Plugin
 
     public function getSubheading(): string
     {
-        return $this->subheading;
+        return __($this->subheading);
     }
 
     public function navigationIcon(?string $icon): static
@@ -141,7 +141,7 @@ class BannerPlugin implements Plugin
 
     public function getNavigationLabel()
     {
-        return $this->navigationLabel;
+        return __($this->navigationLabel);
     }
 
     public function navigationLabel(?string $label): static
