@@ -2,6 +2,9 @@
 
 // translations for Kenepa/Banner
 return [
+    'title' => 'إدارة البانر',
+    'subheading' => 'إدارة اللافتات الخاصة بك',
+    'navigation_label' => 'إدارة البانر',
     'create' => 'اضافة',
     'save' => 'حفظ',
     'inactive' => 'غير نشط',
