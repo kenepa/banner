@@ -8,7 +8,7 @@
                 </x-slot>
 
                 <x-slot name="headerEnd">
-                    <x-filament::dropdown >
+                    <x-filament::dropdown placement="bottom-end">
                         <x-slot name="trigger">
                             <x-filament::icon-button
                                 icon="heroicon-m-ellipsis-vertical"
