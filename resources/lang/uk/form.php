@@ -64,6 +64,18 @@ return [
         'start_time_reset' => 'Скинути час початку',
         'end_time' => 'Час закінчення',
         'end_time_reset' => 'Скинути час закінчення',
+        'link' => 'Посилання',
+        'link_url' => 'URL посилання',
+        'link_open_in_new_tab' => 'Відкрити у новій вкладці',
+        'link_click_action' => 'Дія при натисканні',
+        'link_text' => 'Текст посилання',
+        'link_button_style' => 'Стиль кнопки',
+        'link_button_color' => 'Колір кнопки',
+        'link_text_color' => 'Колір тексту',
+        'link_button_icon' => 'Іконка',
+        'link_button_icon_color' => 'Колір іконки',
+        'link_config' => 'Налаштування посилання',
+        'link_button_config' => 'Налаштування кнопки',
     ],
     'badges' => [
         'scheduling_status' => [
