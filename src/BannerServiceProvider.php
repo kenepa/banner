@@ -9,7 +9,6 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
-use Kenepa\Banner\Commands\BannerCommand;
 use Kenepa\Banner\Testing\TestsBanner;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
@@ -30,14 +29,11 @@ class BannerServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package->name(static::$name)
-            ->hasConfigFile()
             ->hasMigrations($this->getMigrations())
             ->hasTranslations()
             ->hasViews(static::$viewNamespace)
-            ->hasCommands($this->getCommands())
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
-                    ->publishConfigFile()
                     ->publishMigrations()
                     ->askToRunMigrations()
                     ->askToStarRepoOnGitHub('kenepa/banner');
@@ -48,29 +44,6 @@ class BannerServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        // Asset Registration
-        FilamentAsset::register(
-            $this->getAssets(),
-            $this->getAssetPackageName()
-        );
-
-        FilamentAsset::registerScriptData(
-            $this->getScriptData(),
-            $this->getAssetPackageName()
-        );
-
-        // Icon Registration
-        FilamentIcon::register($this->getIcons());
-
-        // Handle Stubs
-        if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
-                $this->publishes([
-                    $file->getRealPath() => base_path("stubs/banner/{$file->getFilename()}"),
-                ], 'banner-stubs');
-            }
-        }
-
         // Testing
         Testable::mixin(new TestsBanner);
     }
@@ -86,9 +59,7 @@ class BannerServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            // AlpineComponent::make('banner', __DIR__ . '/../resources/dist/components/banner.js'),
-            //            Css::make('banner-styles', __DIR__ . '/../resources/dist/banner.css'),
-            //            Js::make('banner-scripts', __DIR__ . '/../resources/dist/banner.js'),
+
         ];
     }
 
@@ -98,7 +69,7 @@ class BannerServiceProvider extends PackageServiceProvider
     protected function getCommands(): array
     {
         return [
-            BannerCommand::class,
+
         ];
     }
 
