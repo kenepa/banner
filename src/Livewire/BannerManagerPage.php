@@ -235,7 +235,7 @@ class BannerManagerPage extends Page
                             Select::make('render_location')
                                 ->searchable()
                                 ->required()
-                                ->hintAction(ComponentAction::make('help')
+                                ->afterLabel(Action::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
                                     ->extraAttributes(['class' => 'text-gray-500'])
                                     ->label('')
