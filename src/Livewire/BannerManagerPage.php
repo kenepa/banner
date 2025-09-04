@@ -107,7 +107,7 @@ class BannerManagerPage extends Page
     {
         return Action::make('createNewBanner')
             ->label(__('banner::manager.create'))
-            ->schema($this->getFormSchema())
+            ->schema($this->getBannerSchema())
             ->icon('heroicon-m-plus')
             ->closeModalByClickingAway(false)
             ->action(fn (array $data) => $this->createBanner($data))
@@ -139,7 +139,7 @@ class BannerManagerPage extends Page
     public function form(Schema $schema): Schema
     {
         return $schema
-            ->schema($this->getFormSchema())
+            ->schema($this->getBannerSchema())
             ->statePath('data');
     }
 
@@ -210,7 +210,7 @@ class BannerManagerPage extends Page
         return $this->selectedBanner->id === $bannerId;
     }
 
-    public function getFormSchema(): array
+    public function getBannerSchema(): array
     {
         return [
             Tabs::make('Tabs')
@@ -235,7 +235,7 @@ class BannerManagerPage extends Page
                             Select::make('render_location')
                                 ->searchable()
                                 ->required()
-                                ->hintAction(Action::make('help')
+                                ->hintAction(ComponentAction::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
                                     ->extraAttributes(['class' => 'text-gray-500'])
                                     ->label('')
@@ -276,7 +276,7 @@ class BannerManagerPage extends Page
                                 ]),
 
                             Select::make('scope')
-                                ->hintAction(Action::make('help')
+                                ->afterLabel(Action::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
                                     ->label('')
                                     ->extraAttributes(['class' => 'text-gray-500'])
@@ -426,7 +426,7 @@ class BannerManagerPage extends Page
                         ->badge(fn ($get) => $this->calculateScheduleStatus($get('start_time'), $get('end_time')))
                         ->schema([
                             DateTimePicker::make('start_time')
-                                ->hintAction(
+                                ->afterLabel(
                                     Action::make('reset')
                                         ->label(__('banner::form.actions.reset'))
                                         ->icon('heroicon-m-arrow-uturn-left')
@@ -450,7 +450,7 @@ class BannerManagerPage extends Page
         ];
     }
 
-    public function disableAllBanners()
+    public function disableAllBanners(): void
     {
         BannerManager::disableAllBanners();
         $this->getBanners();
@@ -461,7 +461,7 @@ class BannerManagerPage extends Page
             ->send();
     }
 
-    public function enableAllBanners()
+    public function enableAllBanners(): void
     {
         BannerManager::enableAllBanners();
         $this->getBanners();
@@ -485,7 +485,7 @@ class BannerManagerPage extends Page
     private function getIcons(): array
     {
         // TODO: Add alternative option to use a free input form instead of select
-        //TODO: able to configure the sets
+        // TODO: able to configure the sets
         $heroicons = app(IconsManifest::class)->getManifest(['heroicons'])['heroicons'];
 
         return array_values($heroicons)[0];
@@ -510,7 +510,7 @@ class BannerManagerPage extends Page
     }
 
     /**
-     * @param  resource  $resourceClass
+     * @param  string  $resourceClass
      * @return string[]
      */
     private function getPagesForResource($resourceClass): array
@@ -531,7 +531,7 @@ class BannerManagerPage extends Page
         return array_values(Filament::getCurrentPanel()->getResources());
     }
 
-    private function calculateScheduleStatus($start_time, $end_time): ScheduleStatus | string
+    private function calculateScheduleStatus($start_time, $end_time): string
     {
 
         if (is_null($start_time) && is_null($end_time)) {
