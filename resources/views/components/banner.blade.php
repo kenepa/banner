@@ -92,7 +92,7 @@
                     </div>
                 </div>
                 <div class="col-span-2 flex justify-end items-center">
-                    @if (isset($banner->link_active) && $banner->link_active && $banner->link_click_action === "button")
+                    @if (isset($banner->link_active) && $banner->link_active && $banner->link_click_action === "button") 
                         <div class="flex space-x-2 hover:opacity-75 {{ $banner->can_be_closed_by_user ? 'mr-4' : '' }}">
                             <div>
                                 @if ($banner->link_button_style === 'button')
