@@ -35,8 +35,6 @@ use Kenepa\Banner\ValueObjects\BannerData;
 
 class BannerManagerPage extends Page
 {
-    protected string $view = 'banner::pages.banner-manager';
-
     protected static ?string $slug = 'banner-manager';
 
     public ?array $data = [];
@@ -47,6 +45,8 @@ class BannerManagerPage extends Page
     public $banners = [];
 
     public ?Banner $selectedBanner = null;
+
+    protected string $view = 'banner::pages.banner-manager';
 
     public static function getNavigationBadge(): ?string
     {
