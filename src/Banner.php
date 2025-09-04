@@ -168,7 +168,7 @@ class Banner implements Wireable
         return false;
     }
 
-    //TODO: Extract funcs to trait
+    // TODO: Extract funcs to trait
     public function hasNoScheduleSet(): bool
     {
         return is_null($this->start_time) && is_null($this->end_time);
