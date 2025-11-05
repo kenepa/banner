@@ -65,33 +65,21 @@ application's requirements.
 
 2. **Setup custom theme**
 
-   Filament v3 recommends that you create a custom theme to better support a plugin's additional Tailwind classes. After
-   [creating your custom theme](https://filamentphp.com/docs/3.x/panels/themes#creating-a-custom-theme), you should add
-   the views of the banner plugin the to your new theme's
-   tailwind.config.js file, which is typically located at `resources/css/filament/admin/tailwind.config.js`:
 
-   ```js
-     content: [
-           ...
-           './vendor/kenepa/banner/resources/**/*.php',
-       ]
-   ```
+In order to compile the package views correctly, we need to [create a custom Filament theme](https://filamentphp.com/docs/4.x/styling/overview#creating-a-custom-theme) **first**, and then add the following path to its content. In the `theme.css` file of the theme, add the following line:
+```css
+@source '../../../../vendor/kenepa/banner/resources/**/*.blade.php';
+```
 
-   Import Banner's custom stylesheet into your theme's CSS file located at `resources/css/filament/admin/theme.css`. (Be
-   aware this may differ in your project):
-   ```css
-   @import '../../../../vendor/kenepa/banner/resources/css/index.css';
-   ```
+Compile your theme:
+```bash
+npm run build
+```
+Run the filament upgrade command:
 
-   Compile your theme:
-   ```bash
-   npm run build
-   ```
-   Run the filament upgrade command:
-
-   ```
-   php artisan filament:upgrade
-   ```
+```bash
+php artisan filament:upgrade
+```
 3. **Add plugin to your panel**
     ```php
     use Kenepa\Banner\BannerPlugin;
@@ -309,9 +297,29 @@ php artisan vendor:publish --tag="banner-views"
 composer test
 ```
 
-## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+## Upgrade Guide
+
+### Upgrading from 0.x to 1.x
+
+#### Step 1: Theme Configuration (Required)
+
+**Breaking Change**: Filament v4 requires a different approach for including package assets.
+
+**Remove from `tailwind.config.js` (if present):**
+```js
+// Remove this from your tailwind.config.js content array:
+'./vendor/kenepa/banner/resources/**/*.blade.php'
+```
+
+**Add to your custom theme CSS file:**
+
+1. Create a custom theme if you don't have one ([Filament v4 theme docs](https://filamentphp.com/docs/4.x/panels/themes#creating-a-custom-theme))
+2. Add this line to your theme's CSS file:
+
+```css
+@source '../../../../vendor/kenepa/banner/resources/**/*.blade.php';
+```
 
 ## Contributing
 

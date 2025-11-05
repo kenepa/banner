@@ -5,25 +5,24 @@ namespace Kenepa\Banner\Livewire;
 use BladeUI\Icons\IconsManifest;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Actions\Action as ComponentAction;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Gate;
@@ -36,8 +35,6 @@ use Kenepa\Banner\ValueObjects\BannerData;
 
 class BannerManagerPage extends Page
 {
-    protected static string $view = 'banner::pages.banner-manager';
-
     protected static ?string $slug = 'banner-manager';
 
     public ?array $data = [];
@@ -48,6 +45,8 @@ class BannerManagerPage extends Page
     public $banners = [];
 
     public ?Banner $selectedBanner = null;
+
+    protected string $view = 'banner::pages.banner-manager';
 
     public static function getNavigationBadge(): ?string
     {
@@ -104,18 +103,18 @@ class BannerManagerPage extends Page
         $this->getBanners();
     }
 
-    public function createNewBannerAction()
+    public function createNewBannerAction(): Action
     {
         return Action::make('createNewBanner')
             ->label(__('banner::manager.create'))
-            ->form($this->getSchema())
+            ->schema($this->getBannerSchema())
             ->icon('heroicon-m-plus')
             ->closeModalByClickingAway(false)
             ->action(fn (array $data) => $this->createBanner($data))
             ->slideOver();
     }
 
-    public function deleteBannerAction()
+    public function deleteBannerAction(): Action
     {
         return Action::make('deleteBanner')
             ->action(function () {
@@ -137,10 +136,10 @@ class BannerManagerPage extends Page
             ->requiresConfirmation();
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema($this->getSchema())
+        return $schema
+            ->schema($this->getBannerSchema())
             ->statePath('data');
     }
 
@@ -211,7 +210,7 @@ class BannerManagerPage extends Page
         return $this->selectedBanner->id === $bannerId;
     }
 
-    public function getSchema(): array
+    public function getBannerSchema(): array
     {
         return [
             Tabs::make('Tabs')
@@ -236,7 +235,7 @@ class BannerManagerPage extends Page
                             Select::make('render_location')
                                 ->searchable()
                                 ->required()
-                                ->hintAction(ComponentAction::make('help')
+                                ->afterLabel(Action::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
                                     ->extraAttributes(['class' => 'text-gray-500'])
                                     ->label('')
@@ -277,7 +276,7 @@ class BannerManagerPage extends Page
                                 ]),
 
                             Select::make('scope')
-                                ->hintAction(ComponentAction::make('help')
+                                ->afterLabel(Action::make('help')
                                     ->icon('heroicon-o-question-mark-circle')
                                     ->label('')
                                     ->extraAttributes(['class' => 'text-gray-500'])
@@ -421,8 +420,8 @@ class BannerManagerPage extends Page
                         ->badge(fn ($get) => $this->calculateScheduleStatus($get('start_time'), $get('end_time')))
                         ->schema([
                             DateTimePicker::make('start_time')
-                                ->hintAction(
-                                    ComponentAction::make('reset')
+                                ->afterLabel(
+                                    Action::make('reset')
                                         ->label(__('banner::form.actions.reset'))
                                         ->icon('heroicon-m-arrow-uturn-left')
                                         ->action(function (Set $set) {
@@ -432,7 +431,7 @@ class BannerManagerPage extends Page
                                 ->label(__('banner::form.fields.start_time')),
                             DateTimePicker::make('end_time')
                                 ->hintAction(
-                                    ComponentAction::make('reset')
+                                    Action::make('reset')
                                         ->label(__('banner::form.actions.reset'))
                                         ->icon('heroicon-m-arrow-uturn-left')
                                         ->action(function (Set $set) {
@@ -445,7 +444,7 @@ class BannerManagerPage extends Page
         ];
     }
 
-    public function disableAllBanners()
+    public function disableAllBanners(): void
     {
         BannerManager::disableAllBanners();
         $this->getBanners();
@@ -456,7 +455,7 @@ class BannerManagerPage extends Page
             ->send();
     }
 
-    public function enableAllBanners()
+    public function enableAllBanners(): void
     {
         BannerManager::enableAllBanners();
         $this->getBanners();
@@ -480,7 +479,7 @@ class BannerManagerPage extends Page
     private function getIcons(): array
     {
         // TODO: Add alternative option to use a free input form instead of select
-        //TODO: able to configure the sets
+        // TODO: able to configure the sets
         $heroicons = app(IconsManifest::class)->getManifest(['heroicons'])['heroicons'];
 
         return array_values($heroicons)[0];
@@ -505,7 +504,7 @@ class BannerManagerPage extends Page
     }
 
     /**
-     * @param  resource  $resourceClass
+     * @param  string  $resourceClass
      * @return string[]
      */
     private function getPagesForResource($resourceClass): array
@@ -526,7 +525,7 @@ class BannerManagerPage extends Page
         return array_values(Filament::getCurrentPanel()->getResources());
     }
 
-    private function calculateScheduleStatus($start_time, $end_time): ScheduleStatus | string
+    private function calculateScheduleStatus($start_time, $end_time): string
     {
 
         if (is_null($start_time) && is_null($end_time)) {
