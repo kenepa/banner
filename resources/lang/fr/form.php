@@ -1,0 +1,91 @@
+<?php
+
+return [
+    'tabs' => [
+        'general' => 'Général',
+        'styling' => 'Style',
+        'scheduling' => 'Planification',
+    ],
+    'fields' => [
+        'id' => 'ID',
+        'name' => 'Nom',
+        'content' => 'Contenu',
+        'render_location' => "Emplacement d'affichage",
+        'render_location_help' => "L'emplacement d'affichage vous permet de choisir où une bannière s'affiche sur la page. Combiné aux scopes, il devient un outil puissant pour gérer où et quand vos bannières sont affichées.' Vous pouvez choisir d'afficher les bannières dans l'en-tête, la barre latérale ou à d'autres emplacements stratégiques afin d\'optimiser leur visibilité et leur impact",
+        'render_location_options' => [
+            'panel' => [
+                'header' => 'En-tête',
+                'page_start' => 'Début de la page',
+                'page_end' => 'Fin de la page',
+            ],
+            'authentication' => [
+                'login_form_before' => 'Formulaire de connexion',
+                'login_form_after' => 'Formulaire de connexion',
+                'password_reset_form_before' => 'Formulaire de réinitialisation du mot de passe',
+                'password_reset_form_after' => 'Formulaire de réinitialisation du mot de passe',
+                'register_form_before' => "Formulaire d'inscription",
+                'register_form_after' => "Formulaire d'inscription",
+            ],
+            'global_search' => [
+                'before' => 'Avant la recherche globale',
+                'after' => 'Après la recherche globale',
+            ],
+            'page_widgets' => [
+                'header_before' => "Avant les widgets d'en-tête",
+                'header_after' => "Après les widgets d'en-tête",
+                'footer_before' => 'Avant les widgets de pied de page',
+                'footer_after' => 'Après les widgets de pied de page',
+            ],
+            'sidebar' => [
+                'nav_start' => 'Avant la navigation latérale',
+                'nav_end' => 'Après la navigation latérale',
+            ],
+            'resource_table' => [
+                'before' => 'Avant le tableau des ressources',
+                'after' => 'Après le tableau des ressources',
+            ],
+        ],
+        'scope' => 'Scope',
+        'scope_help' => "Grâce à la portée, vous pouvez contrôler où votre bannière est affichée. Vous pouvez cibler votre bannière sur des pages spécifiques ou des ressources entières, afin de garantir qu'elle soit affichée à la bonne audience au bon moment.",
+        'options' => 'Options',
+        'can_be_closed_by_user' => "La bannière peut être fermée par l'utilisateur",
+        'can_truncate_message' => "Tronque le contenu de la bannière",
+        'is_active' => 'Actif',
+        'text_color' => 'Couleur du texte',
+        'icon' => 'Icône',
+        'icon_color' => "Couleur de l'icône",
+        'background' => "Arrière-plan",
+        'background_type' => "Type d'arrière-plan",
+        'background_type_solid' => 'Uni',
+        'background_type_gradient' => 'Dégradé',
+        'start_color' => 'Couleur de début',
+        'end_color' => 'Couleur de fin',
+        'start_time' => 'Heure de début',
+        'start_time_reset' => "Réinitialiser l'heure de début",
+        'end_time' => "Heure de fin",
+        'end_time_reset' => "Réinitialiser l'heure de fin",
+        'link' => 'Lien',
+        'link_url' => 'URL du lien',
+        'link_open_in_new_tab' => 'Ouvrir le lien dans un nouvel onglet',
+        'link_click_action' => 'Action au clic sur le lien',
+        'link_text' => 'Texte du lien',
+        'link_button_style' => 'Style du bouton du lien',
+        'link_button_color' => 'Couleur du bouton du lien',
+        'link_text_color' => 'Couleur du texte du lien',
+        'link_button_icon' => 'Icône du bouton du lien',
+        'link_button_icon_color' => "Couleur de l'icône du bouton du lien",
+        'link_config' => "Configuration du lien",
+        'link_button_config' => "Configuration du bouton",
+    ],
+    'badges' => [
+        'scheduling_status' => [
+            'active' => 'Actif',
+            'scheduled' => 'Planifié',
+            'expired' => 'Expiré',
+        ],
+        'actions' => [
+            'help' => 'Aide',
+            'reset' => 'Réinitialiser',
+        ],
+    ]
+];
