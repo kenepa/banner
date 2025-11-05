@@ -4,7 +4,7 @@
             <x-filament::section>
 
                 <x-slot name="heading">
-                    {{ $this->createNewBanner }}
+                    {{ $this->createNewBannerAction }}
                 </x-slot>
 
                 <x-slot name="headerEnd">
@@ -83,7 +83,7 @@
                                 {{ __('banner::manager.save') }}
                             </x-filament::button>
 
-                            {{ $this->deleteBanner }}
+                            {{ $this->deleteBannerAction }}
                         </div>
                     </form>
 
