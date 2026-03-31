@@ -1,0 +1,30 @@
+<?php
+
+// translations for Kenepa/Banner
+return [
+    'title' => 'Gestor de Banners',
+    'subheading' => 'Gerencie os seus banners',
+    'navigation_label' => 'Gestor de Banners',
+    'create' => 'Criar',
+    'save' => 'Guardar',
+    'inactive' => 'Inativo',
+    'banner_list_empty_state_title' => 'Ainda não existem banners',
+    'banner_list_empty_state_description' => 'Assim que criar o seu primeiro banner, ele aparecerá aqui.',
+    'banner_edit_empty_state_title' => 'Nenhum banner selecionado',
+    'banner_edit_empty_state_description' => 'Selecione ou crie um banner para começar',
+    'enable_all_banners' => 'Ativar todos os banners',
+    'disable_all_banners' => 'Desativar todos os banners',
+    'successfully_deleted_banner' => 'Banner eliminado',
+    'successfully_updated_banner' => 'Banner atualizado',
+    'successfully_created_banner' => 'Banner criado',
+    'disabled_all_banners' => 'Desativados todos os banners',
+    'enabled_all_banners' => 'Ativados todos os banners',
+    'failed_to_load_banner' => 'Falha ao carregar o banner',
+    'banner_name' => 'Nome',
+    'banner_content' => 'Conteúdo',
+    'banner_render_location' => 'Local de renderização',
+    'status_due' => 'Pendente',
+    'status_visible' => 'Visível',
+    'status_fulfilled' => 'Concluído',
+    'active_since' => 'Ativo desde',
+];
